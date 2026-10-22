@@ -965,6 +965,8 @@ window.addEventListener("beforeunload", e => { if (S.dirty && !cfg().autosave) {
 window.addEventListener("resize", () => { setTop(); clearTimeout(window._rs); window._rs = setTimeout(() => S.view === "timeline" && render(), 150); });
 
 /* ---------- 시작 ---------- */
+// 이전 화면(esgboard.gh)에 넣어 둔 토큰이 있으면 옮긴다
+try { if (!localStorage.getItem(NS + "settings")) { const old = JSON.parse(localStorage.getItem("esgboard.gh") || "null"); if (old && old.token) store.set("settings", { ...DEFAULTS, token: old.token }); } } catch {}
 applyTheme();
 if (restoreLocal()) fillFilters();
 render(); setTop(); openFromHash();
