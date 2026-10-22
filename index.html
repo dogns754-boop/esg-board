@@ -8,19 +8,20 @@
 :root {
   --bg: #ffffff; --bg2: #f7f7f5; --bg3: #efeeec; --hover: rgba(55,53,47,.06);
   --fg: #37352f; --fg2: #787774; --fg3: #a5a29a; --line: #e9e9e7; --line2: #dcdbd8;
-  --accent: #2383e2; --danger: #e03e3e; --warn-bg: #fdf5e6; --warn-fg: #8a5a00;
-  --shadow: 0 1px 2px rgba(15,15,15,.06), 0 4px 14px rgba(15,15,15,.08);
+  --accent: #2383e2; --danger: #e03e3e; --ok: #448361; --warn-bg: #fdf5e6; --warn-fg: #8a5a00;
+  --shadow: 0 1px 2px rgba(15,15,15,.06), 0 4px 14px rgba(15,15,15,.1);
   --t-gray: #e3e2e0; --t-brown: #eee0da; --t-orange: #fadec9; --t-yellow: #fdecc8; --t-green: #dbeddb;
   --t-blue: #d3e5ef; --t-purple: #e8deee; --t-pink: #f5e0e9; --t-red: #ffe2dd; --t-fg: #32302c;
   --b-gray: #9b9a97; --b-brown: #a27763; --b-orange: #d9730d; --b-yellow: #cb912f; --b-green: #448361;
   --b-blue: #337ea9; --b-purple: #9065b0; --b-pink: #c14c8a; --b-red: #d44c47;
+  --top: 56px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #191919; --bg2: #202020; --bg3: #2a2a2a; --hover: rgba(255,255,255,.06);
     --fg: #e6e6e4; --fg2: #9b9b98; --fg3: #6f6f6c; --line: #2f2f2f; --line2: #3a3a3a;
-    --warn-bg: #3a2f1c; --warn-fg: #f0c674; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.4);
+    --warn-bg: #3a2f1c; --warn-fg: #f0c674; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.45);
     --t-gray: #474747; --t-brown: #5c3b2c; --t-orange: #7a4518; --t-yellow: #7c5c24; --t-green: #2b5940;
     --t-blue: #28456c; --t-purple: #4a3066; --t-pink: #69314c; --t-red: #6e3630; --t-fg: #f1f1ef;
     color-scheme: dark;
@@ -29,7 +30,7 @@
 :root[data-theme="dark"] {
   --bg: #191919; --bg2: #202020; --bg3: #2a2a2a; --hover: rgba(255,255,255,.06);
   --fg: #e6e6e4; --fg2: #9b9b98; --fg3: #6f6f6c; --line: #2f2f2f; --line2: #3a3a3a;
-  --warn-bg: #3a2f1c; --warn-fg: #f0c674; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.4);
+  --warn-bg: #3a2f1c; --warn-fg: #f0c674; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.45);
   --t-gray: #474747; --t-brown: #5c3b2c; --t-orange: #7a4518; --t-yellow: #7c5c24; --t-green: #2b5940;
   --t-blue: #28456c; --t-purple: #4a3066; --t-pink: #69314c; --t-red: #6e3630; --t-fg: #f1f1ef;
   color-scheme: dark;
@@ -44,24 +45,31 @@ body {
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 a { color: var(--accent); }
+code { font-size: 12px; background: var(--bg3); padding: 1px 4px; border-radius: 3px; }
 
-/* 상단 */
-.top { display: flex; align-items: center; gap: 12px; padding: 14px 24px 6px; flex-wrap: wrap; }
-.top h1 { font-size: 22px; margin: 0; font-weight: 700; letter-spacing: -.01em; }
-.top .sub { color: var(--fg2); font-size: 13px; }
+/* 상단 막대 */
+.top { display: flex; align-items: center; gap: 10px; padding: 10px 24px; border-bottom: 1px solid var(--line); flex-wrap: wrap; position: relative; z-index: 30; background: var(--bg); }
+.top h1 { font-size: 18px; margin: 0; font-weight: 700; }
+.top .ver { color: var(--fg3); font-size: 12px; }
 .top .spacer { flex: 1; }
-.savestate { font-size: 12px; color: var(--fg2); }
-.savestate.dirty { color: var(--warn-fg); }
-.btn { border: 1px solid var(--line2); background: var(--bg); border-radius: 6px; padding: 4px 10px; font-size: 13px; }
+.state { font-size: 12px; color: var(--fg2); display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.state .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+.state.unsaved .dot { background: var(--b-yellow); }
+.btn { border: 1px solid var(--line2); background: var(--bg); border-radius: 6px; padding: 5px 12px; font-size: 13px; white-space: nowrap; }
 .btn:hover { background: var(--hover); }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn.primary:hover { filter: brightness(1.05); }
-.btn.danger { color: var(--danger); }
-.btn:disabled { opacity: .45; cursor: default; }
-.iconbtn { border: 0; background: none; border-radius: 4px; padding: 2px 6px; color: var(--fg2); }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn:disabled { opacity: .45; cursor: default; filter: none; }
+.btn .badge { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 4px; border-radius: 9px; background: var(--danger); color: #fff; font-size: 11px; line-height: 18px; text-align: center; }
+.iconbtn { border: 0; background: none; border-radius: 4px; padding: 3px 7px; color: var(--fg2); }
 .iconbtn:hover { background: var(--hover); color: var(--fg); }
+.menu { position: absolute; right: 24px; top: calc(100% - 4px); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: 4px; min-width: 220px; z-index: 40; }
+.menu[hidden] { display: none; }
+.menu button { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 7px 10px; border-radius: 5px; font-size: 13px; }
+.menu button:hover { background: var(--hover); }
+.menu hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
 
-.banner { margin: 6px 24px 0; padding: 8px 12px; border-radius: 6px; background: var(--warn-bg); color: var(--warn-fg); font-size: 13px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.banner { margin: 8px 24px 0; padding: 8px 12px; border-radius: 6px; background: var(--warn-bg); color: var(--warn-fg); font-size: 13px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .banner[hidden] { display: none; }
 
 /* 보기 탭·필터 */
@@ -76,7 +84,9 @@ a { color: var(--accent); }
 .filters label { font-size: 13px; color: var(--fg2); display: flex; align-items: center; gap: 4px; }
 
 main { flex: 1; overflow: auto; position: relative; }
-.empty { color: var(--fg3); padding: 40px 24px; }
+.empty { color: var(--fg2); padding: 48px 24px; max-width: 640px; line-height: 1.7; }
+.empty h2 { color: var(--fg); font-size: 18px; margin: 0 0 8px; }
+.empty .acts { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
 
 /* 태그 */
 .tag { display: inline-flex; align-items: center; max-width: 100%; padding: 0 6px; border-radius: 3px; font-size: 12px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--t-fg); background: var(--t-gray); }
@@ -87,20 +97,22 @@ main { flex: 1; overflow: auto; position: relative; }
 
 /* 보드 */
 .board { display: flex; gap: 12px; padding: 14px 24px 40px; align-items: flex-start; min-height: 100%; }
-.col { flex: 0 0 272px; background: transparent; border-radius: 6px; }
+.col { flex: 0 0 272px; }
 .col-head { display: flex; align-items: center; gap: 6px; padding: 4px 2px 8px; font-size: 13px; color: var(--fg2); }
 .col-head .count { color: var(--fg3); }
 .col-body { display: flex; flex-direction: column; gap: 6px; min-height: 40px; padding: 2px; border-radius: 6px; }
 .col-body.over { background: var(--hover); }
 .card { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; box-shadow: 0 1px 1px rgba(15,15,15,.03); cursor: pointer; user-select: none; }
 .card:hover { background: var(--bg2); }
+.card.sel { border-color: var(--accent); }
 .card.dragging { opacity: .4; }
-.card .title { font-weight: 600; font-size: 14px; margin-bottom: 4px; word-break: keep-all; overflow-wrap: anywhere; }
+.card .title { font-weight: 600; font-size: 14px; margin-bottom: 4px; overflow-wrap: anywhere; }
 .card .props { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
 .card .meta { color: var(--fg2); font-size: 12px; margin-top: 4px; display: flex; gap: 8px; flex-wrap: wrap; }
 .card .id { color: var(--fg3); font-size: 11px; }
+.card .unsynced { color: var(--b-yellow); font-size: 11px; }
 .drop-mark { height: 3px; background: var(--accent); border-radius: 2px; margin: -2px 0; }
-.addcard { border: 0; background: none; color: var(--fg3); text-align: left; padding: 6px 8px; border-radius: 6px; font-size: 13px; }
+.addcard { border: 0; background: none; color: var(--fg3); text-align: left; padding: 6px 8px; border-radius: 6px; font-size: 13px; width: 100%; }
 .addcard:hover { background: var(--hover); color: var(--fg2); }
 
 /* 표 */
@@ -115,11 +127,11 @@ table.grid td.t { font-weight: 600; min-width: 260px; }
 table.grid td.n { color: var(--fg2); white-space: nowrap; }
 
 /* 일정 */
-.tl-tools { display: flex; gap: 6px; align-items: center; padding: 10px 24px 8px; flex-wrap: wrap; font-size: 13px; }
+.tl-tools { display: flex; gap: 8px; align-items: center; padding: 10px 24px 8px; flex-wrap: wrap; font-size: 13px; }
 .seg { display: inline-flex; border: 1px solid var(--line2); border-radius: 6px; overflow: hidden; }
 .seg button { border: 0; background: var(--bg); padding: 3px 10px; font-size: 13px; }
 .seg button.on { background: var(--bg3); font-weight: 600; }
-.tl { position: relative; margin: 0 24px 40px; border: 1px solid var(--line); border-radius: 6px; overflow: auto; max-height: calc(100vh - 210px); }
+.tl { position: relative; margin: 0 24px 40px; border: 1px solid var(--line); border-radius: 6px; overflow: auto; max-height: calc(100vh - 200px); }
 .tl-inner { position: relative; }
 .tl-row { display: flex; height: 34px; border-bottom: 1px solid var(--line); }
 .tl-row.group { height: 30px; background: var(--bg2); }
@@ -140,9 +152,9 @@ table.grid td.n { color: var(--fg2); white-space: nowrap; }
 .tl-grid-bg { position: absolute; top: 0; bottom: 0; pointer-events: none; }
 .tl-grid-bg .we { position: absolute; top: 0; bottom: 0; background: var(--bg2); }
 .tl-grid-bg .todayline { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--danger); opacity: .7; }
-.bar-el { position: absolute; top: 6px; height: 22px; border-radius: 4px; color: #fff; font-size: 12px; line-height: 22px; padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: grab; box-shadow: 0 1px 2px rgba(0,0,0,.15); z-index: 2; }
+.bar-el { position: absolute; top: 6px; height: 22px; border-radius: 4px; color: #fff; font-size: 12px; line-height: 22px; padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: grab; box-shadow: 0 1px 2px rgba(0,0,0,.15); z-index: 2; touch-action: none; }
 .bar-el.done { opacity: .55; }
-.bar-el .h { position: absolute; top: 0; bottom: 0; width: 7px; cursor: ew-resize; }
+.bar-el .h { position: absolute; top: 0; bottom: 0; width: 6px; cursor: ew-resize; }
 .bar-el .h.l { left: 0; } .bar-el .h.r { right: 0; }
 .bar-el.dragging { cursor: grabbing; opacity: .85; }
 .bar-label { position: absolute; top: 6px; line-height: 22px; font-size: 12px; color: var(--fg2); white-space: nowrap; pointer-events: none; z-index: 2; }
@@ -153,10 +165,10 @@ svg.arrows path.bad { stroke: var(--danger); }
 .bg-yellow { background: var(--b-yellow); } .bg-green { background: var(--b-green); } .bg-blue { background: var(--b-blue); }
 .bg-purple { background: var(--b-purple); } .bg-pink { background: var(--b-pink); } .bg-red { background: var(--b-red); }
 
-/* 상세 패널 */
-.panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(520px, 100vw); background: var(--bg); box-shadow: var(--shadow); border-left: 1px solid var(--line); transform: translateX(105%); transition: transform .16s ease; z-index: 20; display: flex; flex-direction: column; }
+/* 상세 패널: 상단 막대 아래에서 열린다 */
+.panel { position: fixed; top: var(--top); right: 0; bottom: 0; width: min(520px, 100vw); background: var(--bg); box-shadow: var(--shadow); border-left: 1px solid var(--line); transform: translateX(105%); transition: transform .16s ease; z-index: 20; display: flex; flex-direction: column; }
 .panel.open { transform: none; }
-.panel-top { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.panel-top { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-bottom: 1px solid var(--line); }
 .panel-top .spacer { flex: 1; }
 .panel-body { flex: 1; overflow: auto; padding: 18px 28px 40px; }
 .panel textarea.ptitle { width: 100%; border: 0; background: none; font-size: 24px; font-weight: 700; resize: none; outline: none; padding: 0; line-height: 1.3; }
@@ -168,7 +180,7 @@ svg.arrows path.bad { stroke: var(--danger); }
 .prow select:hover, .prow input:hover { background: var(--hover); }
 .prow select:focus, .prow input:focus { border-color: var(--line2); background: var(--bg); outline: none; }
 .dates { display: flex; gap: 4px; align-items: center; }
-.dates input { width: auto !important; flex: 1; }
+.dates input { width: auto !important; flex: 1; min-width: 0; }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; padding-top: 3px; }
 .chip { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line2); border-radius: 4px; padding: 0 2px 0 6px; font-size: 12px; max-width: 100%; }
 .chip a { color: var(--fg); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
@@ -176,46 +188,65 @@ svg.arrows path.bad { stroke: var(--danger); }
 .chip .x { border: 0; background: none; color: var(--fg3); padding: 0 4px; }
 .chip .x:hover { color: var(--danger); }
 .chip.bad { border-color: var(--danger); }
-.memo { width: 100%; min-height: 160px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); padding: 10px; resize: vertical; font-size: 14px; line-height: 1.6; margin-top: 6px; }
+.memo { width: 100%; min-height: 180px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); padding: 10px; resize: vertical; font-size: 14px; line-height: 1.6; margin-top: 6px; }
 .sect { margin-top: 18px; font-size: 13px; color: var(--fg2); font-weight: 600; }
 .muted { color: var(--fg3); font-size: 12px; }
 
 /* 대화상자 */
-dialog { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); padding: 20px 22px; width: min(520px, calc(100vw - 32px)); box-shadow: var(--shadow); }
+dialog { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); padding: 20px 22px; width: min(560px, calc(100vw - 32px)); box-shadow: var(--shadow); }
 dialog::backdrop { background: rgba(15,15,15,.35); }
 dialog h2 { margin: 0 0 12px; font-size: 17px; }
-dialog .f { display: grid; grid-template-columns: 110px 1fr; gap: 8px; align-items: center; margin: 8px 0; font-size: 13px; }
+dialog h3 { margin: 18px 0 6px; font-size: 13px; color: var(--fg2); }
+dialog .f { display: grid; grid-template-columns: 120px 1fr; gap: 8px; align-items: center; margin: 7px 0; font-size: 13px; }
 dialog .f input, dialog .f select { border: 1px solid var(--line2); border-radius: 6px; padding: 5px 8px; background: var(--bg); width: 100%; }
-dialog .note { font-size: 12px; color: var(--fg2); line-height: 1.6; margin: 10px 0 0; }
-dialog .acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+dialog .note { font-size: 12px; color: var(--fg2); line-height: 1.6; margin: 8px 0 0; }
+dialog .acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+.hist { max-height: 50vh; overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
+.hist .it { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.hist .it:last-child { border-bottom: 0; }
+.hist .it .m { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hist .it .d { color: var(--fg2); font-size: 12px; white-space: nowrap; }
 
-.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #2f2f2f; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 13px; z-index: 50; box-shadow: var(--shadow); opacity: 0; transition: opacity .2s; pointer-events: none; max-width: calc(100vw - 32px); }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #2f2f2f; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 13px; z-index: 60; box-shadow: var(--shadow); opacity: 0; transition: opacity .2s; pointer-events: none; max-width: calc(100vw - 32px); }
 .toast.show { opacity: 1; }
 
 @media (max-width: 720px) {
   .top, .bar { padding-left: 16px; padding-right: 16px; }
+  .menu { right: 16px; }
+  .banner { margin: 8px 16px 0; }
   .board { padding: 12px 16px 40px; }
   .tablewrap { padding: 10px 16px 40px; overflow-x: auto; }
   .tl { margin: 0 16px 40px; }
+  .tl-tools { padding: 10px 16px 8px; }
   .tl-left { flex-basis: 150px; width: 150px; }
   svg.arrows { left: 150px; }
   .panel-body { padding: 16px 16px 40px; }
   .filters input[type=search] { width: 120px; }
+  .state .txt { display: none; }
 }
 </style>
 </head>
 <body>
-<div class="top">
-  <h1 id="title">ESG공급망 작업</h1>
-  <span class="sub" id="source"></span>
+<header class="top" id="top">
+  <h1 id="title">작업 보드</h1>
+  <span class="ver" id="ver"></span>
   <span class="spacer"></span>
-  <span class="savestate" id="savestate"></span>
-  <button class="btn" id="btnReload" title="다시 불러오기">↻</button>
-  <button class="btn primary" id="btnSave" disabled>저장</button>
-  <button class="btn" id="btnMenu" title="설정">⋯</button>
-</div>
+  <span class="state" id="state" title=""><span class="dot"></span><span class="txt" id="stateTxt"></span></span>
+  <button class="btn primary" id="btnSave" title="브라우저에 저장 (Ctrl+S)">저장</button>
+  <button class="btn" id="btnUpload" title="브라우저에 저장된 보드를 GitHub board.md로 올립니다">GitHub에 올리기</button>
+  <button class="iconbtn" id="btnMenu" title="메뉴">⋯</button>
+  <div class="menu" id="menu" hidden>
+    <button data-act="pull">GitHub에서 최신 버전 받기</button>
+    <button data-act="history">버전 기록 (GitHub)</button>
+    <hr>
+    <button data-act="export">MD 파일 내려받기</button>
+    <button data-act="import">MD 파일 가져오기</button>
+    <hr>
+    <button data-act="settings">설정</button>
+  </div>
+</header>
 <div class="banner" id="banner" hidden></div>
-<div class="bar">
+<nav class="bar">
   <button class="tab" data-view="stage">단계별 보드</button>
   <button class="tab" data-view="status">상태별 보드</button>
   <button class="tab" data-view="table">표</button>
@@ -223,19 +254,17 @@ dialog .acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1
   <span class="spacer"></span>
   <div class="filters">
     <input type="search" id="fq" placeholder="검색">
-    <select id="fsession"><option value="">세션 전체</option></select>
-    <select id="fphase"><option value="">과업 단계 전체</option></select>
+    <select id="fsession"></select>
+    <select id="fphase"></select>
     <label><input type="checkbox" id="fdone">완료 숨기기</label>
   </div>
-</div>
-<main id="main"><div class="empty">불러오는 중…</div></main>
+</nav>
+<main id="main"></main>
 
 <aside class="panel" id="panel">
   <div class="panel-top">
     <span class="muted" id="pid"></span>
     <span class="spacer"></span>
-    <span class="savestate" id="psavestate"></span>
-    <button class="btn primary" id="pSave" disabled>저장</button>
     <button class="iconbtn" id="pcopy" title="링크 복사">🔗</button>
     <button class="iconbtn" id="pdel" title="삭제">🗑</button>
     <button class="iconbtn" id="pclose" title="닫기 (Esc)">✕</button>
@@ -243,58 +272,169 @@ dialog .acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1
   <div class="panel-body" id="pbody"></div>
 </aside>
 
-<dialog id="dlg">
-  <h2>저장 위치 설정</h2>
-  <div class="f"><label for="sMode">모드</label>
-    <select id="sMode">
-      <option value="auto">자동 (로컬 서버면 로컬, 아니면 GitHub)</option>
-      <option value="local">로컬 서버 (scripts/board_server.py)</option>
-      <option value="github">GitHub 저장소</option>
-    </select></div>
-  <div class="f"><label for="sOwner">소유자</label><input id="sOwner" placeholder="dogns754-boop"></div>
-  <div class="f"><label for="sRepo">저장소</label><input id="sRepo" placeholder="esg-supply-chain"></div>
-  <div class="f"><label for="sBranch">브랜치</label><input id="sBranch" placeholder="main"></div>
-  <div class="f"><label for="sPath">파일 경로</label><input id="sPath" placeholder="board/tasks.json"></div>
+<dialog id="dlgSettings">
+  <h2>설정</h2>
+  <h3>저장</h3>
+  <div class="f"><label for="sAutosave">자동 저장</label>
+    <select id="sAutosave"><option value="1">켜기 (고치면 바로 브라우저에 저장)</option><option value="0">끄기 (저장 버튼으로만)</option></select></div>
+  <div class="f"><label for="sAuto">자동으로 올리기</label>
+    <select id="sAuto"><option value="0">끄기 (버튼으로만)</option><option value="10">10분마다</option><option value="30">30분마다</option><option value="60">1시간마다</option></select></div>
+  <p class="note">자동으로 올리기는 이 페이지가 열려 있고, 올리지 않은 변경이 있을 때만 GitHub에 버전을 올립니다.</p>
+  <h3>GitHub 연결</h3>
+  <div class="f"><label for="sOwner">소유자</label><input id="sOwner"></div>
+  <div class="f"><label for="sRepo">저장소</label><input id="sRepo"></div>
+  <div class="f"><label for="sBranch">브랜치</label><input id="sBranch"></div>
+  <div class="f"><label for="sPath">파일 경로</label><input id="sPath"></div>
   <div class="f"><label for="sToken">토큰</label><input id="sToken" type="password" autocomplete="off" placeholder="github_pat_…"></div>
-  <p class="note">토큰은 이 브라우저(localStorage)에만 저장되고 GitHub API(api.github.com)로만 보냅니다. GitHub 설정 → Developer settings → Fine-grained token에서 이 저장소 하나만 고르고 Contents 권한을 Read and write로 주어 만듭니다.</p>
-  <div class="f"><label for="sTheme">화면</label>
+  <p class="note">토큰은 이 브라우저에만 저장되고 GitHub API(api.github.com)로만 보냅니다. GitHub → Settings → Developer settings → Fine-grained tokens에서 저장소를 하나만 고르고 Contents를 Read and write로 주어 만듭니다.</p>
+  <h3>화면</h3>
+  <div class="f"><label for="sTheme">테마</label>
     <select id="sTheme"><option value="">시스템 설정</option><option value="light">밝게</option><option value="dark">어둡게</option></select></div>
   <div class="acts">
-    <button class="btn" id="sExport">JSON 내려받기</button>
-    <span style="flex:1"></span>
+    <button class="btn" id="sClear" style="margin-right:auto;color:var(--danger)">브라우저 데이터 지우기</button>
     <button class="btn" id="sCancel">닫기</button>
-    <button class="btn primary" id="sOk">저장하고 다시 불러오기</button>
+    <button class="btn primary" id="sOk">설정 저장</button>
   </div>
 </dialog>
+
+<dialog id="dlgHistory">
+  <h2>버전 기록</h2>
+  <p class="note" style="margin:0 0 10px">GitHub에 올라간 board.md의 버전입니다. '불러오기'를 누르면 그 버전을 브라우저 보드로 가져옵니다. GitHub에는 다시 올릴 때 반영됩니다.</p>
+  <div class="hist" id="histList"></div>
+  <div class="acts"><button class="btn" id="hClose">닫기</button></div>
+</dialog>
+<input type="file" id="fileImport" accept=".md,text/markdown,text/plain" hidden>
 <div class="toast" id="toast"></div>
 
 <script>
 "use strict";
-/* ---------- 기본 ---------- */
+/* =========================================================
+   작업 보드. 브라우저(localStorage)가 작업 공간이고,
+   GitHub board.md는 '올리기'로 남기는 버전이다.
+   board.md 형식은 scripts/board.py의 parse()/render()와 같다.
+   ========================================================= */
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const ls = {
-  get(k, d = null) { try { const v = localStorage.getItem("esgboard." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
-  set(k, v) { try { localStorage.setItem("esgboard." + k, JSON.stringify(v)); } catch {} },
-  del(k) { try { localStorage.removeItem("esgboard." + k); } catch {} },
+const NS = "esgboard.v2.";
+const store = {
+  get(k, d = null) { try { const v = localStorage.getItem(NS + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(NS + k, JSON.stringify(v)); return true; } catch { return false; } },
+  del(k) { try { localStorage.removeItem(NS + k); } catch {} },
 };
-const DEFAULT_GH = { owner: "dogns754-boop", repo: "esg-supply-chain", branch: "main", path: "board/tasks.json" };
-const FIELD_KEYS = ["status", "stage", "phase", "priority", "session"];
+const DEFAULTS = { owner: "dogns754-boop", repo: "esg-supply-chain", branch: "main", path: "board/board.md", token: "", autosave: true, autoUpload: 0, theme: "" };
+const cfg = () => ({ ...DEFAULTS, ...store.get("settings", {}) });
 
+/* ---------- board.md 읽기·쓰기 (scripts/board.py와 같은 규칙) ---------- */
+const FIELDS = [["status", "상태"], ["stage", "단계"], ["phase", "과업 단계"], ["priority", "우선순위"], ["session", "작업 세션"]];
+const PROPS = [["order", "순서"], ...FIELDS, ["period", "기간"], ["review", "검토 지점"], ["wbs", "WBS"], ["output", "산출물"], ["deps", "선행 작업"]];
+const PROP_KEY = Object.fromEntries(PROPS.map(([k, l]) => [l, k]));
+const INTRO = "이 파일은 작업 보드(https://dogns754-boop.github.io/esg-board/)와 scripts/board.py가 읽고 쓴다. 형식은 board/README.md를 따른다. 손으로 고쳤으면 `python scripts/board.py fmt`와 `check`를 돌린다.";
+const OPT_RE = /^(.*)\(([a-z]+)(?:,\s*([a-z]+))?\)$/;
+const PROP_RE = /^- ([^:]+):\s?(.*)$/;
+
+function newTaskObj(o = {}) {
+  return { id: "", order: 0, title: "", status: "", stage: "", phase: "", priority: "", session: "", start: "", end: "", review: false, wbs: "", output: "", deps: [], memo: "", ...o };
+}
+function trimBlank(lines) { lines = lines.map(l => l.replace(/\s+$/, "")); while (lines.length && !lines[0]) lines.shift(); while (lines.length && !lines[lines.length - 1]) lines.pop(); return lines; }
+function parseMd(text) {
+  const lines = text.replace(/\r\n/g, "\n").split("\n");
+  const meta = {}; let i = 0;
+  if (lines[0] && lines[0].trim() === "---") {
+    i = 1;
+    while (i < lines.length && lines[i].trim() !== "---") { const p = lines[i].indexOf(":"); if (p > 0) meta[lines[i].slice(0, p).trim()] = lines[i].slice(p + 1).trim(); i++; }
+    i++;
+  }
+  meta.version = parseInt(meta.version || "0", 10) || 0;
+  meta.next_id = parseInt(meta.next_id || "1", 10) || 1;
+  meta.title = meta.title || "작업 보드"; meta.updated = meta.updated || "";
+  const fields = Object.fromEntries(FIELDS.map(([k, l]) => [k, { label: l, options: [] }]));
+  const labelKey = Object.fromEntries(FIELDS.map(([k, l]) => [l, k]));
+  const tasks = []; let cur = null, section = null;
+  const finish = () => { if (cur) { cur.memo = trimBlank(cur._memo).join("\n"); delete cur._memo; delete cur._done; delete cur._seen; tasks.push(cur); } };
+  for (const line of lines.slice(i)) {
+    if (line.startsWith("## ")) { finish(); cur = null; section = line.slice(3).trim(); continue; }
+    if (section === "선택지") {
+      const m = line.match(PROP_RE);
+      if (m && labelKey[m[1].trim()]) {
+        fields[labelKey[m[1].trim()]].options = m[2].split(" | ").map(p => p.trim().match(OPT_RE)).filter(Boolean)
+          .map(om => om[3] ? { name: om[1].trim(), color: om[2], group: om[3] } : { name: om[1].trim(), color: om[2] });
+      }
+    } else if (section === "작업") {
+      if (line.startsWith("### ")) {
+        finish();
+        const head = line.slice(4).trim(); const sp = head.indexOf(" ");
+        cur = newTaskObj({ id: sp < 0 ? head : head.slice(0, sp), title: sp < 0 ? "" : head.slice(sp + 1).trim() });
+        cur._memo = []; cur._done = false; cur._seen = false; continue;
+      }
+      if (!cur) continue;
+      if (!cur._done) {
+        const m = line.match(PROP_RE);
+        if (m && PROP_KEY[m[1].trim()]) { setProp(cur, PROP_KEY[m[1].trim()], m[2].trim()); cur._seen = true; continue; }
+        if (!line.trim()) { if (cur._seen) cur._done = true; continue; }
+        cur._done = true;
+      }
+      cur._memo.push(line.startsWith("\\#") ? line.slice(1) : line);
+    }
+  }
+  finish();
+  return { meta, fields, tasks };
+}
+function setProp(t, key, v) {
+  if (key === "order") t.order = Number(v || 0) || 0;
+  else if (key === "period") { const p = v.indexOf("~"); t.start = (p < 0 ? v : v.slice(0, p)).trim(); t.end = p < 0 ? "" : v.slice(p + 1).trim(); }
+  else if (key === "review") t.review = ["예", "true", "y", "yes", "1", "o"].includes(v);
+  else if (key === "deps") t.deps = v.split(",").map(x => x.trim()).filter(Boolean);
+  else t[key] = v;
+}
+function propValue(t, key) {
+  if (key === "order") return String(Number(t.order) || 0);
+  if (key === "period") return (t.start || "") + (t.end ? ` ~ ${t.end}` : "");
+  if (key === "review") return t.review ? "예" : "아니오";
+  if (key === "deps") return (t.deps || []).join(", ");
+  return String(t[key] ?? "");
+}
+function renderMd(d) {
+  const m = d.meta;
+  const out = ["---", `title: ${m.title}`, `version: ${m.version}`, `updated: ${m.updated}`, `next_id: ${m.next_id}`, "---", "", `# ${m.title}`, "", INTRO, "", "## 선택지", ""];
+  FIELDS.forEach(([k, l]) => out.push(`- ${l}: ` + (d.fields[k]?.options || []).map(o => `${o.name}(${o.color}${o.group ? ", " + o.group : ""})`).join(" | ")));
+  out.push("", "## 작업", "");
+  const ordered = d.tasks.map((t, i) => [t, i]).sort((a, b) => ((Number(a[0].order) || 0) - (Number(b[0].order) || 0)) || (a[1] - b[1])).map(x => x[0]);
+  for (const t of ordered) {
+    out.push(`### ${t.id} ${t.title || ""}`.replace(/\s+$/, ""), "");
+    PROPS.forEach(([k, l]) => out.push(`- ${l}: ${propValue(t, k)}`.replace(/\s+$/, "")));
+    const memo = trimBlank(String(t.memo || "").replace(/\r\n/g, "\n").split("\n"));
+    if (memo.length) out.push("", ...memo.map(l => l.startsWith("#") ? "\\" + l : l));
+    out.push("");
+  }
+  return out.join("\n").replace(/\n+$/, "") + "\n";
+}
+
+/* ---------- 상태 ---------- */
 const S = {
-  data: null, version: null, mode: null, dirty: false, changed: new Set(),
-  view: ls.get("view", "stage"), scale: ls.get("scale", "week"), groupTl: ls.get("groupTl", true),
-  sort: ls.get("sort", { key: "order", dir: 1 }),
-  f: { q: "", session: "", phase: "", hideDone: ls.get("hideDone", false) },
+  data: null,            // 보드 데이터
+  base: null,            // 마지막으로 받거나 올린 GitHub 버전 {sha, version, at}
+  unsynced: new Set(),   // GitHub에 올리지 않은 변경(작업 ID, 삭제·복원은 '*')
+  dirty: false,          // 브라우저에 아직 저장하지 않은 변경
+  savedAt: null, uploadedAt: null, busy: false, conflict: false,
+  view: store.get("view", "stage"), scale: store.get("scale", "week"), groupTl: store.get("groupTl", true),
+  sort: store.get("sort", { key: "order", dir: 1 }),
+  f: { q: "", session: "", phase: "", hideDone: store.get("hideDone", false) },
   openId: null,
 };
+const tasks = () => S.data.tasks;
+const byId = id => tasks().find(t => t.id === id);
+const opts = key => S.data.fields[key]?.options || [];
+const label = key => S.data.fields[key]?.label || key;
+const colorOf = (key, val) => (opts(key).find(o => o.name === val) || {}).color || "gray";
+const isDone = t => (opts("status").find(o => o.name === t.status) || {}).group === "done";
+const succOf = id => tasks().filter(t => (t.deps || []).includes(id));
+const tag = (key, val) => val ? `<span class="tag c-${colorOf(key, val)}">${key === "status" ? '<span class="dot"></span>' : ""}${esc(val)}</span>` : "";
 
-function toast(msg, ms = 2400) {
-  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
-  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), ms);
-}
-function applyTheme() { const t = ls.get("theme", ""); if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; }
+function toast(msg, ms = 2600) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), ms); }
+function applyTheme() { const t = cfg().theme; if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; }
+function nowText() { const d = new Date(); return `${fd(d)} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; }
+function hm(ts) { if (!ts) return ""; const d = new Date(ts); const same = fd(d) === fd(new Date()); return (same ? "" : `${d.getMonth() + 1}.${d.getDate()} `) + `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; }
 
 /* ---------- 날짜 ---------- */
 const DAY = 86400000;
@@ -304,18 +444,180 @@ const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 
 const diffDays = (a, b) => Math.round((a - b) / DAY);
 const short = s => { const d = pd(s); return d ? `${d.getMonth() + 1}.${d.getDate()}` : ""; };
 const today = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); };
-function rangeText(t) { if (!t.start) return ""; return t.end && t.end !== t.start ? `${short(t.start)} → ${short(t.end)}` : short(t.start); }
+const rangeText = t => !t.start ? "" : (t.end && t.end !== t.start ? `${short(t.start)} → ${short(t.end)}` : short(t.start));
 
-/* ---------- 데이터 접근 ---------- */
-const tasks = () => S.data.tasks;
-const byId = id => tasks().find(t => t.id === id);
-const opts = key => S.data.fields[key]?.options || [];
-const label = key => S.data.fields[key]?.label || key;
-const colorOf = (key, val) => (opts(key).find(o => o.name === val) || {}).color || "gray";
-const isDone = t => (opts("status").find(o => o.name === t.status) || {}).group === "done";
-const succOf = id => tasks().filter(t => (t.deps || []).includes(id));
-function tag(key, val) { if (!val) return ""; return `<span class="tag c-${colorOf(key, val)}">${key === "status" ? '<span class="dot"></span>' : ""}${esc(val)}</span>`; }
+/* ---------- 브라우저 저장 ---------- */
+function persist() {
+  const ok = store.set("doc", { data: S.data, base: S.base, unsynced: [...S.unsynced], savedAt: Date.now(), uploadedAt: S.uploadedAt });
+  if (!ok) { toast("브라우저 저장에 실패했습니다. 저장 공간이나 사생활 보호 설정을 확인하세요.", 5000); return false; }
+  S.dirty = false; S.savedAt = Date.now(); return true;
+}
+let saveTimer = null;
+function changed(id) {
+  S.dirty = true; S.unsynced.add(id || "*");
+  clearTimeout(saveTimer);
+  if (cfg().autosave) saveTimer = setTimeout(() => { persist(); renderState(); }, 600);
+  renderState();
+}
+function saveNow() { clearTimeout(saveTimer); if (persist()) toast("브라우저에 저장했습니다"); renderState(); }
+function restoreLocal() {
+  const doc = store.get("doc"); if (!doc || !doc.data) return false;
+  S.data = doc.data; S.base = doc.base || null; S.unsynced = new Set(doc.unsynced || []); S.savedAt = doc.savedAt || null; S.uploadedAt = doc.uploadedAt || null;
+  normalize(S.data); return true;
+}
+function normalize(d) { d.meta = { title: "작업 보드", version: 0, updated: "", next_id: 1, ...(d.meta || {}) }; d.tasks = (d.tasks || []).map(t => newTaskObj(t)); }
 
+/* ---------- GitHub ---------- */
+function b64ToText(b64) { const bin = atob(b64.replace(/\s/g, "")); return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))); }
+function textToB64(text) { const bytes = new TextEncoder().encode(text); let s = ""; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s); }
+const ghApi = () => { const c = cfg(); return `https://api.github.com/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}`; };
+const ghPath = () => cfg().path.split("/").map(encodeURIComponent).join("/");
+function ghHeaders() { const h = { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" }; const t = cfg().token; if (t) h.Authorization = "Bearer " + t; return h; }
+async function ghFetch(url, opt = {}) {
+  const r = await fetch(url, { cache: "no-store", ...opt, headers: { ...ghHeaders(), ...(opt.headers || {}) } });
+  if (r.status === 401) throw new Error("GitHub 토큰이 맞지 않습니다. 설정에서 토큰을 확인하세요.");
+  if (r.status === 403) throw new Error("GitHub 권한이 없습니다. 토큰의 Contents 권한(Read and write)과 저장소를 확인하세요.");
+  return r;
+}
+async function ghGet(ref) {
+  const c = cfg();
+  const r = await ghFetch(`${ghApi()}/contents/${ghPath()}?ref=${encodeURIComponent(ref || c.branch)}&t=${Date.now()}`);
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(`GitHub에서 읽지 못했습니다 (${r.status})`);
+  const j = await r.json(); const text = b64ToText(j.content);
+  const data = parseMd(text); normalize(data);
+  return { sha: j.sha, data, text };
+}
+const hasToken = () => !!cfg().token;
+
+function takeRemote(remote, msg) {
+  S.data = remote.data; S.base = { sha: remote.sha, version: remote.data.meta.version, at: Date.now() };
+  S.unsynced = new Set(); S.conflict = false; persist(); hideBanner(); fillFilters(); render();
+  if (msg) toast(msg);
+}
+async function pull(silent) {
+  if (!hasToken()) return openSettings("GitHub에서 받으려면 토큰이 필요합니다.");
+  try {
+    const remote = await ghGet();
+    if (!remote) return toast(`GitHub에 ${cfg().path}이 아직 없습니다. 'GitHub에 올리기'로 처음 버전을 올리세요.`, 4000);
+    if (S.data && S.base && remote.sha === S.base.sha) { if (!silent) toast("이미 최신 버전입니다 (v" + remote.data.meta.version + ")"); return; }
+    if (S.data && S.unsynced.size) return showConflict(remote);
+    takeRemote(remote, `GitHub 버전 v${remote.data.meta.version}을 받았습니다`);
+  } catch (e) { toast(e.message, 4500); }
+}
+async function upload(opt = {}) {
+  if (S.busy || !S.data) return;
+  if (!hasToken()) return opt.auto ? null : openSettings("GitHub에 올리려면 토큰이 필요합니다.");
+  if (S.dirty) persist();
+  S.busy = true; renderState();
+  try {
+    const remote = await ghGet();
+    if (remote && (!S.base || remote.sha !== S.base.sha) && !opt.force) { S.busy = false; return showConflict(remote); }
+    const data = structuredClone(S.data);
+    data.meta.version = Math.max(remote ? remote.data.meta.version : 0, S.base ? S.base.version : 0, data.meta.version || 0) + 1;
+    data.meta.updated = nowText();
+    const text = renderMd(data);
+    const ids = [...S.unsynced].filter(x => x !== "*");
+    const what = ids.length ? ids.slice(0, 5).join(", ") + (ids.length > 5 ? ` 외 ${ids.length - 5}건` : "") : (S.unsynced.has("*") ? "삭제·복원·가져오기" : "정리");
+    const body = { message: `보드 v${data.meta.version}: ${what}${opt.auto ? " (자동)" : ""}`, content: textToB64(text), branch: cfg().branch };
+    if (remote) body.sha = remote.sha;
+    const r = await ghFetch(`${ghApi()}/contents/${ghPath()}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    if (r.status === 409 || r.status === 422) { const again = await ghGet(); S.busy = false; return showConflict(again); }
+    if (!r.ok) throw new Error(`GitHub에 올리지 못했습니다 (${r.status})`);
+    const j = await r.json();
+    S.data.meta.version = data.meta.version; S.data.meta.updated = data.meta.updated;
+    S.base = { sha: j.content.sha, version: data.meta.version, at: Date.now() };
+    S.unsynced = new Set(); S.uploadedAt = Date.now(); S.conflict = false; persist(); hideBanner();
+    render(); toast(`GitHub에 v${data.meta.version}으로 올렸습니다`);
+  } catch (e) { toast(e.message, 4500); }
+  finally { S.busy = false; renderState(); }
+}
+function showConflict(remote) {
+  S.conflict = true; renderState();
+  const n = S.unsynced.size;
+  showBanner(`GitHub에 이 브라우저가 모르는 새 버전(v${remote.data.meta.version}, ${remote.data.meta.updated || "시각 없음"})이 있습니다. 클로드 세션이나 다른 기기에서 올린 것입니다. 이 브라우저에는 올리지 않은 변경 ${n}건이 있습니다.`, [
+    ["GitHub 버전 받기 (내 변경 버림)", () => { if (confirm(`올리지 않은 변경 ${n}건을 버리고 GitHub 버전을 받을까요?`)) takeRemote(remote, `GitHub 버전 v${remote.data.meta.version}을 받았습니다`); }],
+    ["내 버전으로 덮어 올리기", () => { if (confirm("GitHub의 새 버전을 이 브라우저 보드로 덮어씁니다. 덮인 버전은 버전 기록에서 다시 불러올 수 있습니다. 올릴까요?")) { S.base = { sha: remote.sha, version: remote.data.meta.version, at: Date.now() }; upload({ force: true }); } }],
+    ["내 버전 MD 내려받기", () => download(S.data, "board-mine.md")],
+  ]);
+}
+async function startupSync() {
+  if (!hasToken()) return;
+  try {
+    const remote = await ghGet();
+    if (!remote) return;
+    if (!S.data) return takeRemote(remote, `GitHub에서 v${remote.data.meta.version}을 받았습니다`);
+    if (S.base && remote.sha === S.base.sha) return;
+    if (!S.unsynced.size) return takeRemote(remote, `GitHub의 새 버전 v${remote.data.meta.version}을 받았습니다`);
+    showConflict(remote);
+  } catch (e) { toast(e.message, 4500); }
+}
+setInterval(() => {
+  const c = cfg(); if (!c.autoUpload || !hasToken() || !S.unsynced.size || S.conflict || S.busy) return;
+  const last = Math.max(S.uploadedAt || 0, S.base?.at || 0);
+  if (Date.now() - last >= c.autoUpload * 60000) upload({ auto: true });
+}, 60000);
+
+/* ---------- 파일 ---------- */
+function download(data, name) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([renderMd(data)], { type: "text/markdown;charset=utf-8" }));
+  a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+$("#fileImport").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  const d = parseMd(await f.text()); normalize(d);
+  if (!d.tasks.length) return toast("작업을 찾지 못했습니다. board.md 형식인지 확인하세요.", 4000);
+  if (S.data && !confirm(`${f.name}의 작업 ${d.tasks.length}개로 지금 보드를 바꿀까요? (GitHub에는 올릴 때 반영됩니다)`)) return;
+  S.data = d; S.unsynced.add("*"); changed(); persist(); fillFilters(); render(); toast("가져왔습니다");
+};
+
+/* ---------- 버전 기록 ---------- */
+async function openHistory() {
+  if (!hasToken()) return openSettings("버전 기록을 보려면 토큰이 필요합니다.");
+  const list = $("#histList"); list.innerHTML = '<div class="it">불러오는 중…</div>'; $("#dlgHistory").showModal();
+  try {
+    const c = cfg();
+    const r = await ghFetch(`${ghApi()}/commits?path=${encodeURIComponent(c.path)}&sha=${encodeURIComponent(c.branch)}&per_page=40`);
+    if (!r.ok) throw new Error(`기록을 읽지 못했습니다 (${r.status})`);
+    const items = await r.json();
+    if (!items.length) { list.innerHTML = '<div class="it">아직 올라간 버전이 없습니다.</div>'; return; }
+    list.innerHTML = items.map(it => `<div class="it"><span class="m" title="${esc(it.commit.message)}">${esc(it.commit.message.split("\n")[0])}</span><span class="d">${hm(it.commit.author.date)}</span><button class="btn" data-sha="${it.sha}">불러오기</button></div>`).join("");
+    $$("[data-sha]", list).forEach(b => b.onclick = async () => {
+      const v = await ghGet(b.dataset.sha); if (!v) return toast("그 버전에는 파일이 없습니다");
+      if (!confirm(`v${v.data.meta.version} (${v.data.meta.updated})을 브라우저 보드로 불러올까요? 지금 보드는 이 버전으로 바뀌고, GitHub에는 '올리기'를 눌러야 반영됩니다.`)) return;
+      S.data = v.data; S.unsynced.add("*"); changed(); persist(); $("#dlgHistory").close(); fillFilters(); render(); toast(`v${v.data.meta.version}을 불러왔습니다`);
+    });
+  } catch (e) { list.innerHTML = `<div class="it">${esc(e.message)}</div>`; }
+}
+$("#hClose").onclick = () => $("#dlgHistory").close();
+
+/* ---------- 상단 상태 ---------- */
+function renderState() {
+  const st = $("#state"), tx = $("#stateTxt");
+  if (!S.data) { tx.textContent = ""; $("#btnSave").disabled = true; $("#btnUpload").disabled = true; return; }
+  st.classList.toggle("unsaved", S.dirty);
+  tx.textContent = S.dirty ? "저장 안 됨" : `브라우저에 저장됨${S.savedAt ? " " + hm(S.savedAt) : ""}`;
+  st.title = S.dirty ? "저장 버튼이나 Ctrl+S로 브라우저에 저장합니다" : "이 브라우저에 저장되어 있습니다";
+  $("#btnSave").disabled = !S.dirty;
+  $("#btnSave").textContent = S.dirty ? "저장" : "저장됨";
+  const n = S.unsynced.size, up = $("#btnUpload");
+  up.disabled = S.busy;
+  up.innerHTML = S.busy ? "올리는 중…" : `GitHub에 올리기${n ? `<span class="badge">${n}</span>` : ""}`;
+  up.title = n ? `GitHub에 올리지 않은 변경 ${n}건` : "GitHub와 같습니다";
+  const m = S.data.meta;
+  $("#ver").textContent = S.base ? `GitHub v${S.base.version}${S.uploadedAt ? ` · 마지막 올림 ${hm(S.uploadedAt)}` : ""}` : (hasToken() ? "GitHub에 아직 올리지 않음" : "브라우저에만 저장 중");
+  $("#title").textContent = m.title; document.title = m.title + " 보드";
+}
+function showBanner(text, actions = []) {
+  const b = $("#banner"); b.hidden = false; b.innerHTML = `<span>${esc(text)}</span>`;
+  actions.forEach(([l, fn]) => { const x = document.createElement("button"); x.className = "btn"; x.textContent = l; x.onclick = fn; b.appendChild(x); });
+  setTop();
+}
+function hideBanner() { $("#banner").hidden = true; setTop(); }
+function setTop() { const b = $("#banner"); const el = b.hidden ? $("#top") : b; document.documentElement.style.setProperty("--top", el.getBoundingClientRect().bottom + (b.hidden ? 0 : 8) + "px"); }
+
+/* ---------- 보기 ---------- */
 function filtered() {
   const q = S.f.q.trim().toLowerCase();
   return tasks().filter(t => {
@@ -324,152 +626,7 @@ function filtered() {
     if (S.f.phase && t.phase !== S.f.phase) return false;
     if (q && !(`${t.id} ${t.title} ${t.memo} ${t.wbs}`.toLowerCase().includes(q))) return false;
     return true;
-  }).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-}
-
-function wouldCycle(taskId, candId) {
-  const seen = new Set(); const stack = [candId];
-  while (stack.length) {
-    const id = stack.pop(); if (id === taskId) return true;
-    if (seen.has(id)) continue; seen.add(id);
-    (byId(id)?.deps || []).forEach(d => stack.push(d));
-  }
-  return false;
-}
-
-function touch(t) {
-  S.dirty = true; if (t) S.changed.add(t.id);
-  ls.set("draft", { base: S.version, mode: S.mode, data: S.data, changed: [...S.changed] });
-  renderState();
-}
-
-/* ---------- 불러오기·저장 ---------- */
-function ghCfg() { return { ...DEFAULT_GH, ...ls.get("gh", {}) }; }
-function resolveMode() {
-  const m = ls.get("mode", "auto");
-  if (m !== "auto") return m;
-  const h = location.hostname;
-  return (h === "localhost" || h === "127.0.0.1" || location.protocol === "file:") ? "local" : "github";
-}
-function b64ToText(b64) { const bin = atob(b64.replace(/\s/g, "")); return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))); }
-function textToB64(text) { const bytes = new TextEncoder().encode(text); let s = ""; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s); }
-function ghHeaders() { const c = ghCfg(); const h = { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" }; if (c.token) h.Authorization = "Bearer " + c.token; return h; }
-function ghUrl() { const c = ghCfg(); return `https://api.github.com/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${c.path.split("/").map(encodeURIComponent).join("/")}`; }
-
-async function fetchRemote() {
-  if (S.mode === "local") {
-    const r = await fetch("tasks.json?ts=" + Date.now(), { cache: "no-store" });
-    if (!r.ok) throw new Error(`tasks.json을 읽지 못했습니다 (${r.status})`);
-    return { data: await r.json(), version: r.headers.get("ETag") || null };
-  }
-  const c = ghCfg();
-  if (!c.token) throw new Error("NO_TOKEN");
-  const r = await fetch(ghUrl() + "?ref=" + encodeURIComponent(c.branch) + "&ts=" + Date.now(), { headers: ghHeaders(), cache: "no-store" });
-  if (!r.ok) throw new Error(`GitHub에서 읽지 못했습니다 (${r.status}). 토큰 권한과 저장소 설정을 확인하세요.`);
-  const j = await r.json();
-  return { data: JSON.parse(b64ToText(j.content)), version: j.sha };
-}
-
-async function load(keepOpen) {
-  S.mode = resolveMode();
-  const c = ghCfg();
-  $("#source").textContent = S.mode === "local" ? "로컬 · board/tasks.json" : `GitHub · ${c.owner}/${c.repo}@${c.branch}`;
-  try {
-    const { data, version } = await fetchRemote();
-    validate(data);
-    S.data = data; S.version = version; S.dirty = false; S.changed = new Set();
-    const draft = ls.get("draft");
-    if (draft && draft.mode === S.mode && draft.data) {
-      if (draft.base === version) showBanner(`저장하지 않은 변경 ${draft.changed.length}건이 이 브라우저에 남아 있습니다.`, [["복원", () => { S.data = draft.data; S.changed = new Set(draft.changed); S.dirty = true; hideBanner(); render(); }], ["버리기", () => { ls.del("draft"); hideBanner(); }]]);
-      else showBanner("이 브라우저에 남은 변경은 그 뒤 원본이 바뀌어 복원할 수 없습니다. 필요하면 JSON으로 내려받아 비교하세요.", [["내려받기", () => download(draft.data, "tasks-draft.json")], ["버리기", () => { ls.del("draft"); hideBanner(); }]]);
-    } else hideBanner();
-    $("#title").textContent = data.meta?.title || "작업 보드";
-    document.title = (data.meta?.title || "작업 보드") + " 보드";
-    fillFilters(); render();
-    if (!keepOpen) openFromHash(); else if (S.openId && byId(S.openId)) openPanel(S.openId);
-  } catch (e) {
-    if (e.message === "NO_TOKEN") {
-      $("#main").innerHTML = `<div class="empty">GitHub에서 불러오려면 토큰이 필요합니다. 오른쪽 위 ⋯ 설정에서 토큰을 넣어 주세요.</div>`;
-      openSettings();
-    } else {
-      $("#main").innerHTML = `<div class="empty">${esc(e.message)}<br><br>로컬에서는 <code>python scripts/board_server.py</code>로 열어야 저장할 수 있습니다.</div>`;
-    }
-  }
-}
-
-function validate(d) {
-  if (!d || !Array.isArray(d.tasks) || !d.fields) throw new Error("tasks.json 형식이 아닙니다 (fields, tasks 필요).");
-  d.meta = d.meta || {};
-  d.tasks.forEach(t => { t.deps = Array.isArray(t.deps) ? t.deps : []; for (const k of ["title", "memo", "wbs", "start", "end", "output"]) if (t[k] == null) t[k] = ""; });
-}
-
-function serialize(d) {
-  const ind = s => s.replace(/\n/g, "\n  ");
-  return "{\n" +
-    `  "meta": ${ind(JSON.stringify(d.meta, null, 2))},\n` +
-    `  "fields": ${ind(JSON.stringify(d.fields, null, 2))},\n` +
-    `  "tasks": [\n` + d.tasks.map(t => "    " + oneLine(t)).join(",\n") + "\n  ]\n}\n";
-}
-// Python json.dumps(obj, ensure_ascii=False)와 같은 모양(", " / ": ")
-function oneLine(v) {
-  if (Array.isArray(v)) return "[" + v.map(oneLine).join(", ") + "]";
-  if (v && typeof v === "object") return "{" + Object.entries(v).map(([k, x]) => JSON.stringify(k) + ": " + oneLine(x)).join(", ") + "}";
-  return JSON.stringify(v);
-}
-
-async function save() {
-  if (!S.dirty) return;
-  S.data.meta.updated = fd(today());
-  const text = serialize(S.data);
-  const btns = [$("#btnSave"), $("#pSave")]; btns.forEach(x => { x.disabled = true; x.textContent = "저장 중…"; });
-  try {
-    if (S.mode === "local") {
-      const r = await fetch("tasks.json", { method: "PUT", headers: { "Content-Type": "application/json", ...(S.version ? { "If-Match": S.version } : {}) }, body: text });
-      if (r.status === 409) return conflict();
-      if (r.status === 405 || r.status === 501) throw new Error("이 서버는 저장을 받지 않습니다. scripts/board_server.py로 여세요.");
-      if (!r.ok) throw new Error("저장 실패 (" + r.status + ")");
-      S.version = r.headers.get("ETag") || S.version;
-    } else {
-      const c = ghCfg();
-      const ids = [...S.changed]; const msg = "보드 수정: " + (ids.length ? ids.slice(0, 6).join(", ") + (ids.length > 6 ? ` 외 ${ids.length - 6}건` : "") : "정리");
-      const r = await fetch(ghUrl(), { method: "PUT", headers: { ...ghHeaders(), "Content-Type": "application/json" }, body: JSON.stringify({ message: msg, content: textToB64(text), sha: S.version, branch: c.branch }) });
-      if (r.status === 409 || r.status === 422) return conflict();
-      if (!r.ok) throw new Error("GitHub 저장 실패 (" + r.status + ")");
-      S.version = (await r.json()).content.sha;
-    }
-    S.dirty = false; S.changed = new Set(); ls.del("draft"); toast("저장했습니다");
-  } catch (e) { toast(e.message, 4000); }
-  finally { btns.forEach(x => x.textContent = "저장"); renderState(); }
-}
-
-function conflict() {
-  showBanner("다른 곳(클로드 코드 세션 등)에서 tasks.json이 먼저 바뀌었습니다. 내 변경은 이 브라우저에 남아 있습니다.", [
-    ["다시 불러오기(내 변경 버림)", () => { ls.del("draft"); load(true); }],
-    ["내 변경 내려받기", () => download(S.data, "tasks-mine.json")],
-  ]);
-  renderState();
-}
-
-function download(data, name) {
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([serialize(data)], { type: "application/json" }));
-  a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-}
-
-function showBanner(text, actions = []) {
-  const b = $("#banner"); b.hidden = false; b.innerHTML = `<span>${esc(text)}</span>`;
-  actions.forEach(([l, fn]) => { const x = document.createElement("button"); x.className = "btn"; x.textContent = l; x.onclick = fn; b.appendChild(x); });
-}
-function hideBanner() { $("#banner").hidden = true; }
-
-/* ---------- 화면 ---------- */
-function renderState() {
-  const text = S.dirty ? `저장 안 된 변경 ${S.changed.size}건` : (S.data ? "저장됨" : "");
-  [["#savestate", "#btnSave"], ["#psavestate", "#pSave"]].forEach(([si, bi]) => {
-    $(bi).disabled = !S.dirty;
-    $(si).className = "savestate" + (S.dirty ? " dirty" : "");
-    $(si).textContent = text;
-  });
+  }).sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
 }
 function fillFilters() {
   const fill = (sel, key, first) => { sel.innerHTML = `<option value="">${first}</option>` + opts(key).map(o => `<option>${esc(o.name)}</option>`).join(""); };
@@ -477,7 +634,8 @@ function fillFilters() {
   $("#fsession").value = S.f.session; $("#fphase").value = S.f.phase; $("#fdone").checked = S.f.hideDone;
 }
 function render() {
-  if (!S.data) return;
+  renderState();
+  if (!S.data) return renderEmpty();
   $$(".tab").forEach(b => b.classList.toggle("on", b.dataset.view === S.view));
   const m = $("#main"); const sx = m.scrollLeft, sy = m.scrollTop;
   const tlScroll = $(".tl") ? [$(".tl").scrollLeft, $(".tl").scrollTop] : null;
@@ -486,8 +644,16 @@ function render() {
   else if (S.view === "table") renderTable();
   else renderTimeline(tlScroll);
   m.scrollLeft = sx; m.scrollTop = sy;
-  renderState();
   if (S.openId) refreshPanel();
+}
+function renderEmpty() {
+  $("#main").innerHTML = `<div class="empty"><h2>이 브라우저에 보드가 없습니다</h2>
+    보드는 이 브라우저에 저장하며 작업하고, 'GitHub에 올리기'로 저장소의 <code>${esc(cfg().path)}</code>에 버전을 남깁니다.<br>
+    처음이면 GitHub 토큰을 넣어 저장소의 보드를 받거나, board.md 파일을 가져오세요.
+    <div class="acts"><button class="btn primary" id="eTok">GitHub 연결</button><button class="btn" id="eImp">MD 파일 가져오기</button><button class="btn" id="eNew">빈 보드로 시작</button></div></div>`;
+  $("#eTok").onclick = () => openSettings();
+  $("#eImp").onclick = () => $("#fileImport").click();
+  $("#eNew").onclick = () => { S.data = parseMd(renderMd({ meta: { title: "작업 보드", version: 0, updated: "", next_id: 1 }, fields: { status: { options: [{ name: "대기", color: "gray", group: "todo" }, { name: "진행 중", color: "blue", group: "doing" }, { name: "완료", color: "green", group: "done" }] } }, tasks: [] })); normalize(S.data); changed(); persist(); fillFilters(); render(); };
 }
 
 /* 보드 */
@@ -498,10 +664,10 @@ function cardHtml(t) {
   if (t.session) meta.push(esc(t.session));
   if (t.deps.length) meta.push(`선행 ${t.deps.length}`);
   if (t.review) meta.push("검토 지점");
-  return `<div class="card" draggable="true" data-id="${esc(t.id)}">
+  return `<div class="card${t.id === S.openId ? " sel" : ""}" draggable="true" data-id="${esc(t.id)}">
     <div class="title">${esc(t.title) || '<span class="muted">제목 없음</span>'}</div>
     <div class="props">${tag(other, t[other])}${t.priority === "높음" ? tag("priority", t.priority) : ""}</div>
-    <div class="meta"><span class="id">${esc(t.id)}</span>${meta.map(x => `<span>${x}</span>`).join("")}</div></div>`;
+    <div class="meta"><span class="id">${esc(t.id)}</span>${meta.map(x => `<span>${x}</span>`).join("")}${S.unsynced.has(t.id) ? '<span class="unsynced" title="GitHub에 올리지 않은 변경">●</span>' : ""}</div></div>`;
 }
 function renderBoard(key) {
   const list = filtered();
@@ -514,9 +680,6 @@ function renderBoard(key) {
       <div class="col-body">${items.map(cardHtml).join("")}</div>
       <button class="addcard" data-val="${esc(c)}">＋ 새 작업</button></div>`;
   }).join("")}</div>`;
-  bindBoard(key);
-}
-function bindBoard(key) {
   let dragId = null;
   $$(".card").forEach(c => {
     c.onclick = () => openPanel(c.dataset.id);
@@ -529,8 +692,8 @@ function bindBoard(key) {
     col.ondragover = e => {
       if (!dragId) return; e.preventDefault(); body.classList.add("over");
       $$(".drop-mark").forEach(x => x.remove());
-      const m = document.createElement("div"); m.className = "drop-mark";
-      const ref = after(e.clientY); ref ? body.insertBefore(m, ref) : body.appendChild(m);
+      const mk = document.createElement("div"); mk.className = "drop-mark";
+      const ref = after(e.clientY); ref ? body.insertBefore(mk, ref) : body.appendChild(mk);
     };
     col.ondragleave = e => { if (!col.contains(e.relatedTarget)) { body.classList.remove("over"); $$(".drop-mark", col).forEach(x => x.remove()); } };
     col.ondrop = e => {
@@ -539,33 +702,31 @@ function bindBoard(key) {
       const sibs = $$(".card:not(.dragging)", body).map(c => byId(c.dataset.id));
       const idx = ref ? sibs.findIndex(s => s.id === ref.dataset.id) : sibs.length;
       const prev = sibs[idx - 1], next = sibs[idx];
-      let order;
-      if (prev && next) order = (prev.order + next.order) / 2;
-      else if (prev) order = Math.floor(prev.order) + 1;
-      else if (next) order = next.order - 1;
-      else order = t.order;
-      t[key] = col.dataset.val; t.order = Math.round(order * 1000) / 1000;
-      dragId = null; touch(t); render();
+      let order = t.order;
+      if (prev && next) order = (Number(prev.order) + Number(next.order)) / 2;
+      else if (prev) order = Math.floor(Number(prev.order)) + 1;
+      else if (next) order = Number(next.order) - 1;
+      const val = col.dataset.val; dragId = null;
+      if (t[key] === val && Number(t.order) === Math.round(order * 1000) / 1000) return render();
+      t[key] = val; t.order = Math.round(order * 1000) / 1000;
+      changed(t.id); render();
     };
   });
   $$(".addcard").forEach(b => b.onclick = () => newTask({ [key]: b.dataset.val }));
 }
 
 /* 표 */
-const COLS = [
-  ["id", "ID"], ["order", "순서"], ["title", "작업명"], ["status", "상태"], ["stage", "단계"], ["phase", "과업 단계"],
-  ["priority", "우선순위"], ["session", "작업 세션"], ["start", "기간"], ["review", "검토"], ["deps", "선행 작업"], ["wbs", "WBS"],
-];
+const COLS = [["id", "ID"], ["order", "순서"], ["title", "작업명"], ["status", "상태"], ["stage", "단계"], ["phase", "과업 단계"], ["priority", "우선순위"], ["session", "작업 세션"], ["start", "기간"], ["review", "검토"], ["deps", "선행 작업"], ["wbs", "WBS"]];
 function renderTable() {
   const { key, dir } = S.sort;
-  const val = t => key === "deps" ? t.deps.length : key === "id" ? Number(t.id.replace(/\D/g, "")) : key === "review" ? (t.review ? 1 : 0) : (t[key] ?? "");
+  const val = t => key === "deps" ? t.deps.length : key === "id" ? Number(t.id.replace(/\D/g, "")) : key === "review" ? (t.review ? 1 : 0) : key === "order" ? Number(t.order) : (t[key] ?? "");
   const list = filtered().sort((a, b) => { const x = val(a), y = val(b); return (x > y ? 1 : x < y ? -1 : 0) * dir; });
   $("#main").innerHTML = `<div class="tablewrap"><table class="grid"><thead><tr>${COLS.map(([k, l]) => `<th data-k="${k}">${l}${k === key ? ` <span class="arrow">${dir > 0 ? "↑" : "↓"}</span>` : ""}</th>`).join("")}</tr></thead><tbody>${list.map(t => `<tr data-id="${esc(t.id)}">
-    <td class="n">${esc(t.id)}</td><td class="n">${t.order ?? ""}</td><td class="t">${esc(t.title)}</td>
+    <td class="n">${esc(t.id)}</td><td class="n">${t.order}</td><td class="t">${esc(t.title)}</td>
     <td>${tag("status", t.status)}</td><td>${tag("stage", t.stage)}</td><td>${tag("phase", t.phase)}</td><td>${tag("priority", t.priority)}</td><td>${tag("session", t.session)}</td>
     <td class="n">${rangeText(t)}</td><td>${t.review ? "✓" : ""}</td><td class="n">${t.deps.map(esc).join(", ")}</td><td class="n">${esc(t.wbs)}</td></tr>`).join("")}</tbody></table>
     ${list.length ? "" : '<div class="empty">조건에 맞는 작업이 없습니다.</div>'}</div>`;
-  $$("th").forEach(th => th.onclick = () => { const k = th.dataset.k; S.sort = { key: k, dir: S.sort.key === k ? -S.sort.dir : 1 }; ls.set("sort", S.sort); render(); });
+  $$("th").forEach(th => th.onclick = () => { const k = th.dataset.k; S.sort = { key: k, dir: S.sort.key === k ? -S.sort.dir : 1 }; store.set("sort", S.sort); render(); });
   $$("tbody tr").forEach(tr => tr.onclick = () => openPanel(tr.dataset.id));
 }
 
@@ -575,17 +736,14 @@ const ROW = 34, LEFT = () => (matchMedia("(max-width: 720px)").matches ? 150 : 2
 function renderTimeline(prevScroll) {
   const list = filtered();
   const dated = list.filter(t => t.start), undated = list.filter(t => !t.start);
-  const px = SCALES[S.scale].px;
-  const t0 = today();
+  const px = SCALES[S.scale].px, t0 = today();
   let min = dated.length ? dated.reduce((m, t) => pd(t.start) < m ? pd(t.start) : m, pd(dated[0].start)) : t0;
   let max = dated.length ? dated.reduce((m, t) => { const e = pd(t.end || t.start); return e > m ? e : m; }, pd(dated[0].end || dated[0].start)) : addDays(t0, 30);
   if (t0 < min) min = t0; if (t0 > max) max = t0;
   min = addDays(min, -7); max = addDays(max, 14);
-  if (S.scale !== "day") min = addDays(min, -((min.getDay() + 6) % 7)); // 월요일부터
+  if (S.scale !== "day") min = addDays(min, -((min.getDay() + 6) % 7));
   const days = diffDays(max, min) + 1, W = days * px;
   const x = s => diffDays(pd(s), min) * px;
-
-  // 행 구성
   const rows = [];
   if (S.groupTl) {
     const groups = opts("stage").map(o => o.name); if (list.some(t => !t.stage)) groups.push("");
@@ -595,24 +753,18 @@ function renderTimeline(prevScroll) {
   const rowY = {}; let y = 0;
   rows.forEach(r => { r.y = y; if (r.t && !r.nodate) rowY[r.t.id] = y; y += r.group !== undefined ? 30 : ROW; });
   const H = y;
-
-  // 머리글(월·일)
   let months = "", ticks = "", bg = "";
   for (let i = 0; i < days; i++) {
-    const d = addDays(min, i), we = d.getDay() === 0 || d.getDay() === 6;
+    const d = addDays(min, i), we = d.getDay() === 0 || d.getDay() === 6, isT = +d === +t0;
     if (d.getDate() === 1 || i === 0) months += `<span style="left:${i * px}px">${d.getFullYear()}.${d.getMonth() + 1}</span>`;
-    const isToday = +d === +t0;
-    if (S.scale === "day") ticks += `<span class="${we ? "we" : ""}${isToday ? " today" : ""}" style="left:${i * px}px;width:${px}px">${d.getDate()}</span>`;
-    else if (S.scale === "week" && d.getDay() === 1) ticks += `<span class="${isToday ? "today" : ""}" style="left:${i * px}px">${d.getMonth() + 1}.${d.getDate()}</span>`;
-    if (we && S.scale !== "month") bg += `<div class="we" style="left:${i * px}px;width:${px}px"></div>`;
+    if (S.scale === "day") ticks += `<span class="${we ? "we" : ""}${isT ? " today" : ""}" style="left:${i * px}px;width:${px}px">${d.getDate()}</span>`;
+    else if (S.scale === "week" && d.getDay() === 1) ticks += `<span style="left:${i * px}px">${d.getMonth() + 1}.${d.getDate()}</span>`;
+    if (we && S.scale === "day") bg += `<div class="we" style="left:${i * px}px;width:${px}px"></div>`;
   }
   bg += `<div class="todayline" style="left:${diffDays(t0, min) * px + px / 2 - 1}px"></div>`;
-
-  // 행 HTML
   const body = rows.map(r => {
     if (r.group !== undefined) return `<div class="tl-row group"><div class="tl-left">${r.nodate ? "날짜 없음" : (r.group ? tag("stage", r.group) : "단계 없음")}</div><div class="tl-track" style="width:${W}px"></div></div>`;
-    const t = r.t;
-    let bar = "";
+    const t = r.t; let bar = "";
     if (!r.nodate) {
       const L = x(t.start), R = x(t.end || t.start) + px, w = Math.max(R - L, px);
       const lab = w < 140 ? `<span class="bar-label" style="left:${L + w + 6}px">${esc(t.title)}</span>` : "";
@@ -620,48 +772,37 @@ function renderTimeline(prevScroll) {
     }
     return `<div class="tl-row"><div class="tl-left" data-id="${esc(t.id)}"><span class="id">${esc(t.id)}</span><span class="ttl">${esc(t.title)}</span></div><div class="tl-track" style="width:${W}px">${bar}</div></div>`;
   }).join("");
-
-  // 종속성 화살표
   let paths = "";
   dated.forEach(t => t.deps.forEach(d => {
     const p = byId(d); if (!p || !p.start || rowY[p.id] === undefined || rowY[t.id] === undefined) return;
-    const x1 = x(p.end || p.start) + px, y1 = rowY[p.id] + ROW / 2;
-    const x2 = x(t.start), y2 = rowY[t.id] + ROW / 2;
+    const x1 = x(p.end || p.start) + px, y1 = rowY[p.id] + ROW / 2, x2 = x(t.start), y2 = rowY[t.id] + ROW / 2;
     const bad = pd(t.start) < pd(p.end || p.start);
-    let dpath;
-    if (x2 - x1 >= 16) dpath = `M${x1},${y1} H${x1 + 8} V${y2} H${x2 - 2}`;
-    else { const mid = y2 > y1 ? rowY[t.id] - 2 : rowY[t.id] + ROW + 2; dpath = `M${x1},${y1} H${x1 + 8} V${mid} H${x2 - 10} V${y2} H${x2 - 2}`; }
+    const dpath = x2 - x1 >= 16 ? `M${x1},${y1} H${x1 + 8} V${y2} H${x2 - 2}` : `M${x1},${y1} H${x1 + 8} V${y2 > y1 ? rowY[t.id] - 2 : rowY[t.id] + ROW + 2} H${x2 - 10} V${y2} H${x2 - 2}`;
     paths += `<path class="${bad ? "bad" : ""}" d="${dpath}" marker-end="url(#${bad ? "ahb" : "ah"})"><title>${esc(p.id)} → ${esc(t.id)}</title></path>`;
   }));
-
   $("#main").innerHTML = `<div class="tl-tools">
       <span class="seg">${Object.entries(SCALES).map(([k, v]) => `<button data-scale="${k}" class="${k === S.scale ? "on" : ""}">${v.name}</button>`).join("")}</span>
       <button class="btn" id="tlToday">오늘</button>
       <label><input type="checkbox" id="tlGroup" ${S.groupTl ? "checked" : ""}> 단계별로 묶기</label>
-      <span class="muted">막대를 끌면 날짜가 바뀌고, 끝을 끌면 기간이 바뀝니다. 빨간 화살표는 선행 작업보다 먼저 시작하는 작업입니다.</span>
+      <span class="muted">막대를 끌면 날짜가, 끝을 끌면 기간이 바뀝니다. 빨간 화살표는 선행 작업이 끝나기 전에 시작하는 작업입니다.</span>
     </div>
     <div class="tl"><div class="tl-inner" style="width:${LEFT() + W}px">
-      <div class="tl-head">
-        <div class="tl-row"><div class="tl-left">작업</div><div class="tl-track" style="width:${W}px"><div class="tl-months">${months}</div><div class="tl-days">${ticks}</div></div></div>
-      </div>
+      <div class="tl-head"><div class="tl-row"><div class="tl-left">작업</div><div class="tl-track" style="width:${W}px"><div class="tl-months">${months}</div><div class="tl-days">${ticks}</div></div></div></div>
       <div style="position:relative">
         <div class="tl-grid-bg" style="left:${LEFT()}px;width:${W}px;height:${H}px">${bg}</div>
         ${body}
-        <svg class="arrows" width="${W}" height="${H}">
-          <defs>
-            <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill:var(--fg3);stroke:none"/></marker>
-            <marker id="ahb" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill:var(--danger);stroke:none"/></marker>
-          </defs>${paths}</svg>
-      </div>
-    </div></div>`;
-
+        <svg class="arrows" width="${W}" height="${H}"><defs>
+          <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill:var(--fg3);stroke:none"/></marker>
+          <marker id="ahb" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill:var(--danger);stroke:none"/></marker>
+        </defs>${paths}</svg>
+      </div></div></div>`;
   const tl = $(".tl");
-  const scrollToToday = () => { tl.scrollLeft = Math.max(0, diffDays(t0, min) * px - 200); };
-  if (prevScroll && renderTimeline._scale === S.scale) { tl.scrollLeft = prevScroll[0]; tl.scrollTop = prevScroll[1]; } else scrollToToday();
+  const toToday = () => { tl.scrollLeft = Math.max(0, diffDays(t0, min) * px - 200); };
+  if (prevScroll && renderTimeline._scale === S.scale) { tl.scrollLeft = prevScroll[0]; tl.scrollTop = prevScroll[1]; } else toToday();
   renderTimeline._scale = S.scale;
-  $$("[data-scale]").forEach(b => b.onclick = () => { S.scale = b.dataset.scale; ls.set("scale", S.scale); render(); });
-  $("#tlToday").onclick = scrollToToday;
-  $("#tlGroup").onchange = e => { S.groupTl = e.target.checked; ls.set("groupTl", S.groupTl); render(); };
+  $$("[data-scale]").forEach(b => b.onclick = () => { S.scale = b.dataset.scale; store.set("scale", S.scale); render(); });
+  $("#tlToday").onclick = toToday;
+  $("#tlGroup").onchange = e => { S.groupTl = e.target.checked; store.set("groupTl", S.groupTl); render(); };
   $$(".tl-left[data-id]").forEach(el => el.onclick = () => openPanel(el.dataset.id));
   $$(".bar-el").forEach(el => bindBar(el, px));
 }
@@ -669,7 +810,7 @@ function bindBar(el, px) {
   el.onpointerdown = e => {
     if (e.button !== 0) return;
     const t = byId(el.dataset.id); const mode = e.target.classList.contains("l") ? "l" : e.target.classList.contains("r") ? "r" : "m";
-    const x0 = e.clientX, L0 = el.offsetLeft, W0 = el.offsetWidth; let dd = 0; let moved = false;
+    const x0 = e.clientX, L0 = el.offsetLeft, W0 = el.offsetWidth; let dd = 0, moved = false;
     el.setPointerCapture(e.pointerId); el.classList.add("dragging");
     el.onpointermove = ev => {
       dd = Math.round((ev.clientX - x0) / px); if (Math.abs(ev.clientX - x0) > 3) moved = true;
@@ -679,42 +820,48 @@ function bindBar(el, px) {
     };
     el.onpointerup = () => {
       el.onpointermove = el.onpointerup = null; el.classList.remove("dragging");
-      if (!moved) { openPanel(t.id); return; }
+      if (!moved) return openPanel(t.id);
       if (dd === 0) return render();
       const s = pd(t.start), e2 = pd(t.end || t.start);
       if (mode === "m") { t.start = fd(addDays(s, dd)); if (t.end) t.end = fd(addDays(e2, dd)); }
       else if (mode === "r") { const ne = addDays(e2, dd); t.end = ne <= s ? "" : fd(ne); }
-      else { const ns = addDays(s, dd); if (ns <= e2) { t.start = fd(ns); if (!t.end) t.end = fd(e2); if (t.end === t.start) t.end = ""; } }
-      touch(t); render();
+      else { const ns = addDays(s, dd); if (ns <= e2) { t.start = fd(ns); t.end = +ns === +e2 ? "" : fd(e2); } }
+      changed(t.id); render();
     };
   };
 }
 
 /* ---------- 상세 패널 ---------- */
 function openPanel(id) {
-  S.openId = id; $("#panel").classList.add("open");
+  S.openId = id; setTop(); $("#panel").classList.add("open");
   if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
-  refreshPanel();
+  refreshPanel(); $$(".card").forEach(c => c.classList.toggle("sel", c.dataset.id === id));
 }
-function closePanel() { S.openId = null; $("#panel").classList.remove("open"); history.replaceState(null, "", location.pathname + location.search); }
-function openFromHash() { const id = decodeURIComponent(location.hash.slice(1)); if (id && byId(id)) openPanel(id); }
-
+function closePanel() { S.openId = null; $("#panel").classList.remove("open"); history.replaceState(null, "", location.pathname + location.search); $$(".card.sel").forEach(c => c.classList.remove("sel")); }
+function openFromHash() { const id = decodeURIComponent(location.hash.slice(1)); if (id && S.data && byId(id)) openPanel(id); }
+function wouldCycle(taskId, candId) {
+  const seen = new Set(), stack = [candId];
+  while (stack.length) { const id = stack.pop(); if (id === taskId) return true; if (seen.has(id)) continue; seen.add(id); (byId(id)?.deps || []).forEach(d => stack.push(d)); }
+  return false;
+}
 function refreshPanel() {
   const t = byId(S.openId); if (!t) return closePanel();
-  const active = document.activeElement; const focusKey = active?.dataset?.k; const selStart = active?.selectionStart;
-  $("#pid").textContent = t.id;
+  const act = document.activeElement, focusKey = act?.closest?.("#pbody") ? act.dataset.k : null, selStart = act?.selectionStart;
+  $("#pid").textContent = t.id + (S.unsynced.has(t.id) ? " · GitHub에 올리지 않은 변경" : "");
   const sel = key => `<select data-k="${key}"><option value=""></option>${opts(key).map(o => `<option ${o.name === t[key] ? "selected" : ""}>${esc(o.name)}</option>`).join("")}</select>`;
-  const chip = (id, removable) => { const o = byId(id); const bad = o && t.start && o.start && removable && pd(t.start) < pd(o.end || o.start);
-    return `<span class="chip${bad ? " bad" : ""}" title="${bad ? "선행 작업이 끝나기 전에 시작합니다" : ""}"><a data-go="${esc(id)}">${esc(id)} ${esc(o ? o.title : "(없는 작업)")}</a>${removable ? `<button class="x" data-rm="${esc(id)}" title="빼기">×</button>` : ""}</span>`; };
+  const chip = (id, removable) => {
+    const o = byId(id); const bad = o && removable && t.start && o.start && pd(t.start) < pd(o.end || o.start);
+    return `<span class="chip${bad ? " bad" : ""}" title="${bad ? "선행 작업이 끝나기 전에 시작합니다" : ""}"><a data-go="${esc(id)}">${esc(id)} ${esc(o ? o.title : "(없는 작업)")}</a>${removable ? `<button class="x" data-rm="${esc(id)}" title="빼기">×</button>` : ""}</span>`;
+  };
   const cands = tasks().filter(o => o.id !== t.id && !t.deps.includes(o.id) && !wouldCycle(t.id, o.id)).sort((a, b) => a.order - b.order);
   const succ = succOf(t.id);
   $("#pbody").innerHTML = `
     <textarea class="ptitle" data-k="title" rows="1" placeholder="제목 없음">${esc(t.title)}</textarea>
     <div style="margin-top:12px">
-      ${FIELD_KEYS.map(k => `<div class="prow"><div class="k">${esc(label(k))}</div><div class="v">${sel(k)}</div></div>`).join("")}
+      ${FIELDS.map(([k]) => `<div class="prow"><div class="k">${esc(label(k))}</div><div class="v">${sel(k)}</div></div>`).join("")}
       <div class="prow"><div class="k">기간</div><div class="v dates"><input type="date" data-k="start" value="${esc(t.start)}"><span class="muted">→</span><input type="date" data-k="end" value="${esc(t.end)}"></div></div>
       <div class="prow"><div class="k">검토 지점</div><div class="v"><label style="display:flex;gap:6px;align-items:center;padding-top:5px;font-size:13px"><input type="checkbox" data-k="review" ${t.review ? "checked" : ""}> 끝나면 멈추고 사용자 검토</label></div></div>
-      <div class="prow"><div class="k">순서</div><div class="v"><input type="number" step="any" data-k="order" value="${t.order ?? ""}"></div></div>
+      <div class="prow"><div class="k">순서</div><div class="v"><input type="number" step="any" data-k="order" value="${t.order}"></div></div>
       <div class="prow"><div class="k">WBS</div><div class="v"><input type="text" data-k="wbs" value="${esc(t.wbs)}"></div></div>
       <div class="prow"><div class="k">산출물</div><div class="v" style="display:flex;gap:4px;align-items:center"><input type="url" data-k="output" value="${esc(t.output)}" placeholder="링크">${t.output ? `<a href="${esc(t.output)}" target="_blank" rel="noopener" title="열기">↗</a>` : ""}</div></div>
       <div class="prow"><div class="k">선행 작업</div><div class="v"><div class="chips">${t.deps.map(d => chip(d, true)).join("")}</div>
@@ -722,89 +869,106 @@ function refreshPanel() {
       <div class="prow"><div class="k">후속 작업</div><div class="v"><div class="chips">${succ.length ? succ.map(o => chip(o.id, false)).join("") : '<span class="muted" style="padding-top:5px">없음</span>'}</div></div></div>
     </div>
     <div class="sect">메모</div>
-    <textarea class="memo" data-k="memo" placeholder="메모">${esc(t.memo)}</textarea>`;
+    <textarea class="memo" data-k="memo" placeholder="메모를 쓰세요">${esc(t.memo)}</textarea>`;
   const ta = $(".ptitle"); const fit = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; }; fit();
   $$("#pbody [data-k]").forEach(el => {
     const k = el.dataset.k;
     const apply = () => {
       let v = el.type === "checkbox" ? el.checked : el.value;
-      if (k === "order") v = v === "" ? 0 : Number(v);
+      if (k === "order") v = Number(v) || 0;
       if (k === "title") v = v.replace(/\n/g, " ");
-      if (t[k] === v) return;
+      if (t[k] === v) return false;
       t[k] = v;
-      if (k === "end" && t.end && t.start && t.end < t.start) t.end = "";
-      if (k === "start" && t.end && t.start && t.end < t.start) t.end = "";
-      if (t.end && t.end === t.start) t.end = "";
-      touch(t);
+      if ((k === "start" || k === "end") && t.start && t.end && t.end <= t.start) t.end = "";
+      if (k === "end" && t.end && !t.start) { t.start = t.end; t.end = ""; }
+      changed(t.id); return true;
     };
-    if (el.tagName === "SELECT" || el.type === "checkbox" || el.type === "date") el.onchange = () => { apply(); render(); };
-    else { el.oninput = () => { if (k === "title") fit(); apply(); }; el.onchange = () => render(); }
+    if (el.tagName === "SELECT" || el.type === "checkbox" || el.type === "date") el.onchange = () => { if (apply()) render(); };
+    else { el.oninput = () => { if (k === "title") fit(); apply(); }; el.onblur = () => render(); }
   });
-  $("[data-add]").onchange = e => { if (!e.target.value) return; t.deps.push(e.target.value); touch(t); render(); };
-  $$("[data-rm]").forEach(b => b.onclick = () => { t.deps = t.deps.filter(d => d !== b.dataset.rm); touch(t); render(); });
+  $("[data-add]").onchange = e => { if (!e.target.value) return; t.deps.push(e.target.value); changed(t.id); render(); };
+  $$("[data-rm]").forEach(b => b.onclick = () => { t.deps = t.deps.filter(d => d !== b.dataset.rm); changed(t.id); render(); });
   $$("[data-go]").forEach(a => a.onclick = () => openPanel(a.dataset.go));
   if (focusKey) { const el = $(`#pbody [data-k="${focusKey}"]`); if (el && el.tagName !== "SELECT") { el.focus(); try { if (selStart != null) el.setSelectionRange(selStart, selStart); } catch {} } }
 }
-
 function newTask(preset = {}) {
-  const meta = S.data.meta;
-  let n = meta.next_id || 1; while (byId("ESG-" + n)) n++;
-  meta.next_id = n + 1;
-  const sameCol = Object.entries(preset).length ? tasks().filter(t => Object.entries(preset).every(([k, v]) => (t[k] || "") === v)) : tasks();
-  const order = sameCol.length ? Math.floor(Math.max(...sameCol.map(t => t.order || 0))) + 1 : Math.floor(Math.max(0, ...tasks().map(t => t.order || 0))) + 1;
-  const t = { id: "ESG-" + n, order, title: "", stage: "", phase: "", status: "대기", priority: "보통", session: "", wbs: "", start: "", end: "", review: false, output: "", deps: [], memo: "", ...preset };
-  tasks().push(t); touch(t); render(); openPanel(t.id);
-  setTimeout(() => $(".ptitle")?.focus(), 50);
+  const meta = S.data.meta; let n = meta.next_id || 1; while (byId("ESG-" + n)) n++; meta.next_id = n + 1;
+  const same = tasks().filter(t => Object.entries(preset).every(([k, v]) => (t[k] || "") === v));
+  const pool = same.length ? same : tasks();
+  const order = Math.floor(Math.max(0, ...pool.map(t => Number(t.order) || 0))) + 1;
+  const t = newTaskObj({ id: "ESG-" + n, order, status: "대기", priority: "보통", ...preset });
+  tasks().push(t); changed(t.id); render(); openPanel(t.id);
+  setTimeout(() => $(".ptitle")?.focus(), 60);
 }
 function deleteTask(id) {
   const t = byId(id); if (!t) return;
   if (!confirm(`${t.id} "${t.title || "제목 없음"}"을(를) 지울까요? 다른 작업의 선행 작업 연결도 함께 빠집니다.`)) return;
   S.data.tasks = tasks().filter(x => x.id !== id);
-  tasks().forEach(x => { if (x.deps.includes(id)) { x.deps = x.deps.filter(d => d !== id); S.changed.add(x.id); } });
-  S.changed.add(id); closePanel(); touch(); render();
+  tasks().forEach(x => { if (x.deps.includes(id)) { x.deps = x.deps.filter(d => d !== id); S.unsynced.add(x.id); } });
+  closePanel(); changed("*"); render();
 }
 
 /* ---------- 설정 ---------- */
-function openSettings() {
-  const c = ghCfg();
-  $("#sMode").value = ls.get("mode", "auto"); $("#sOwner").value = c.owner; $("#sRepo").value = c.repo; $("#sBranch").value = c.branch; $("#sPath").value = c.path;
-  $("#sToken").value = c.token || ""; $("#sTheme").value = ls.get("theme", "");
-  $("#dlg").showModal();
+function openSettings(note) {
+  const c = cfg();
+  $("#sAutosave").value = c.autosave ? "1" : "0"; $("#sAuto").value = String(c.autoUpload);
+  $("#sOwner").value = c.owner; $("#sRepo").value = c.repo; $("#sBranch").value = c.branch; $("#sPath").value = c.path; $("#sToken").value = c.token; $("#sTheme").value = c.theme;
+  if (note) toast(note, 3500);
+  $("#dlgSettings").showModal();
 }
-$("#sCancel").onclick = () => $("#dlg").close();
-$("#sExport").onclick = () => S.data && download(S.data, "tasks.json");
-$("#sTheme").onchange = e => { ls.set("theme", e.target.value); applyTheme(); };
+$("#sCancel").onclick = () => $("#dlgSettings").close();
+$("#sTheme").onchange = e => { store.set("settings", { ...cfg(), theme: e.target.value }); applyTheme(); };
 $("#sOk").onclick = () => {
-  ls.set("mode", $("#sMode").value);
-  ls.set("gh", { owner: $("#sOwner").value.trim() || DEFAULT_GH.owner, repo: $("#sRepo").value.trim() || DEFAULT_GH.repo, branch: $("#sBranch").value.trim() || DEFAULT_GH.branch, path: $("#sPath").value.trim() || DEFAULT_GH.path, token: $("#sToken").value.trim() });
-  $("#dlg").close();
-  if (S.dirty && !confirm("저장하지 않은 변경은 이 브라우저에 남겨 두고 다시 불러올까요?")) return;
-  load();
+  const before = cfg();
+  const c = { ...before, autosave: $("#sAutosave").value === "1", autoUpload: Number($("#sAuto").value),
+    owner: $("#sOwner").value.trim() || DEFAULTS.owner, repo: $("#sRepo").value.trim() || DEFAULTS.repo, branch: $("#sBranch").value.trim() || DEFAULTS.branch,
+    path: $("#sPath").value.trim() || DEFAULTS.path, token: $("#sToken").value.trim(), theme: $("#sTheme").value };
+  store.set("settings", c); $("#dlgSettings").close(); applyTheme(); renderState();
+  const target = ["owner", "repo", "branch", "path"].some(k => before[k] !== c[k]);
+  if (target) S.base = null;
+  if (c.token && (target || !before.token)) startupSync().then(render);
+  toast("설정을 저장했습니다");
+};
+$("#sClear").onclick = () => {
+  if (!confirm("이 브라우저의 보드 데이터를 지웁니다. GitHub에 올리지 않은 변경은 사라집니다. 설정(토큰)은 남깁니다. 지울까요?")) return;
+  store.del("doc"); S.data = null; S.base = null; S.unsynced = new Set(); S.dirty = false; $("#dlgSettings").close(); closePanel(); render();
 };
 
 /* ---------- 이벤트 ---------- */
-$$(".tab").forEach(b => b.onclick = () => { S.view = b.dataset.view; ls.set("view", S.view); render(); });
+$$(".tab").forEach(b => b.onclick = () => { S.view = b.dataset.view; store.set("view", S.view); render(); });
 $("#fq").oninput = e => { S.f.q = e.target.value; render(); };
 $("#fsession").onchange = e => { S.f.session = e.target.value; render(); };
 $("#fphase").onchange = e => { S.f.phase = e.target.value; render(); };
-$("#fdone").onchange = e => { S.f.hideDone = e.target.checked; ls.set("hideDone", S.f.hideDone); render(); };
-$("#btnSave").onclick = save;
-$("#pSave").onclick = save;
-$("#btnReload").onclick = () => { if (S.dirty && !confirm("저장하지 않은 변경이 있습니다. 변경은 이 브라우저에 남겨 두고 원본을 다시 불러올까요?")) return; load(true); };
-$("#btnMenu").onclick = openSettings;
+$("#fdone").onchange = e => { S.f.hideDone = e.target.checked; store.set("hideDone", S.f.hideDone); render(); };
+$("#btnSave").onclick = saveNow;
+$("#btnUpload").onclick = () => upload();
+$("#btnMenu").onclick = e => { e.stopPropagation(); $("#menu").hidden = !$("#menu").hidden; };
+document.addEventListener("click", e => { if (!e.target.closest("#menu")) $("#menu").hidden = true; });
+$("#menu").onclick = e => {
+  const a = e.target.dataset.act; if (!a) return; $("#menu").hidden = true;
+  if (a === "pull") pull();
+  else if (a === "history") openHistory();
+  else if (a === "export") S.data ? download(S.data, "board.md") : toast("보드가 없습니다");
+  else if (a === "import") $("#fileImport").click();
+  else if (a === "settings") openSettings();
+};
 $("#pclose").onclick = closePanel;
 $("#pdel").onclick = () => deleteTask(S.openId);
-$("#pcopy").onclick = () => { navigator.clipboard?.writeText(location.href).then(() => toast("링크를 복사했습니다"), () => toast(location.href)); };
+$("#pcopy").onclick = () => navigator.clipboard?.writeText(location.href).then(() => toast("링크를 복사했습니다"), () => toast(location.href));
 document.addEventListener("keydown", e => {
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); save(); }
-  else if (e.key === "Escape" && S.openId && !$("#dlg").open) closePanel();
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); saveNow(); }
+  else if (e.key === "Escape" && S.openId && !document.querySelector("dialog[open]")) closePanel();
 });
 window.addEventListener("hashchange", openFromHash);
-window.addEventListener("beforeunload", e => { if (S.dirty) { e.preventDefault(); e.returnValue = ""; } });
-let rsT; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(() => S.view === "timeline" && render(), 150); });
+window.addEventListener("pagehide", () => { if (S.dirty && cfg().autosave) persist(); });
+window.addEventListener("beforeunload", e => { if (S.dirty && !cfg().autosave) { e.preventDefault(); e.returnValue = ""; } });
+window.addEventListener("resize", () => { setTop(); clearTimeout(window._rs); window._rs = setTimeout(() => S.view === "timeline" && render(), 150); });
 
+/* ---------- 시작 ---------- */
 applyTheme();
-load();
+if (restoreLocal()) fillFilters();
+render(); setTop(); openFromHash();
+startupSync().then(() => { if (S.data) { fillFilters(); render(); openFromHash(); } });
 </script>
 </body>
 </html>
