@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ESG공급망 작업 보드</title>
+<style>
+:root {
+  --bg: #ffffff; --bg2: #f7f7f5; --bg3: #efeeec; --hover: rgba(55,53,47,.06);
+  --fg: #37352f; --fg2: #787774; --fg3: #a5a29a; --line: #e9e9e7; --line2: #dcdbd8;
+  --accent: #2383e2; --danger: #e03e3e; --warn-bg: #fdf5e6; --warn-fg: #8a5a00;
+  --shadow: 0 1px 2px rgba(15,15,15,.06), 0 4px 14px rgba(15,15,15,.08);
+  --t-gray: #e3e2e0; --t-brown: #eee0da; --t-orange: #fadec9; --t-yellow: #fdecc8; --t-green: #dbeddb;
+  --t-blue: #d3e5ef; --t-purple: #e8deee; --t-pink: #f5e0e9; --t-red: #ffe2dd; --t-fg: #32302c;
+  --b-gray: #9b9a97; --b-brown: #a27763; --b-orange: #d9730d; --b-yellow: #cb912f; --b-green: #448361;
+  --b-blue: #337ea9; --b-purple: #9065b0; --b-pink: #c14c8a; --b-red: #d44c47;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #191919; --bg2: #202020; --bg3: #2a2a2a; --hover: rgba(255,255,255,.06);
+    --fg: #e6e6e4; --fg2: #9b9b98; --fg3: #6f6f6c; --line: #2f2f2f; --line2: #3a3a3a;
+    --warn-bg: #3a2f1c; --warn-fg: #f0c674; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.4);
+    --t-gray: #474747; --t-brown: #5c3b2c; --t-orange: #7a4518; --t-yellow: #7c5c24; --t-green: #2b5940;
+    --t-blue: #28456c; --t-purple: #4a3066; --t-pink: #69314c; --t-red: #6e3630; --t-fg: #f1f1ef;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #191919; --bg2: #202020; --bg3: #2a2a2a; --hover: rgba(255,255,255,.06);
+  --fg: #e6e6e4; --fg2: #9b9b98; --fg3: #6f6f6c; --line: #2f2f2f; --line2: #3a3a3a;
+  --warn-bg: #3a2f1c; --warn-fg: #f0c674; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.4);
+  --t-gray: #474747; --t-brown: #5c3b2c; --t-orange: #7a4518; --t-yellow: #7c5c24; --t-green: #2b5940;
+  --t-blue: #28456c; --t-purple: #4a3066; --t-pink: #69314c; --t-red: #6e3630; --t-fg: #f1f1ef;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--accent); }
+
+/* 상단 */
+.top { display: flex; align-items: center; gap: 12px; padding: 14px 24px 6px; flex-wrap: wrap; }
+.top h1 { font-size: 22px; margin: 0; font-weight: 700; letter-spacing: -.01em; }
+.top .sub { color: var(--fg2); font-size: 13px; }
+.top .spacer { flex: 1; }
+.savestate { font-size: 12px; color: var(--fg2); }
+.savestate.dirty { color: var(--warn-fg); }
+.btn { border: 1px solid var(--line2); background: var(--bg); border-radius: 6px; padding: 4px 10px; font-size: 13px; }
+.btn:hover { background: var(--hover); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { filter: brightness(1.05); }
+.btn.danger { color: var(--danger); }
+.btn:disabled { opacity: .45; cursor: default; }
+.iconbtn { border: 0; background: none; border-radius: 4px; padding: 2px 6px; color: var(--fg2); }
+.iconbtn:hover { background: var(--hover); color: var(--fg); }
+
+.banner { margin: 6px 24px 0; padding: 8px 12px; border-radius: 6px; background: var(--warn-bg); color: var(--warn-fg); font-size: 13px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.banner[hidden] { display: none; }
+
+/* 보기 탭·필터 */
+.bar { display: flex; align-items: center; gap: 4px; padding: 6px 24px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.tab { border: 0; background: none; padding: 5px 9px; border-radius: 4px; color: var(--fg2); font-size: 14px; }
+.tab:hover { background: var(--hover); }
+.tab.on { color: var(--fg); font-weight: 600; box-shadow: inset 0 -2px 0 var(--fg); border-radius: 0; }
+.bar .spacer { flex: 1; }
+.filters { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.filters input[type=search], .filters select { border: 1px solid var(--line2); background: var(--bg); border-radius: 6px; padding: 3px 8px; font-size: 13px; }
+.filters input[type=search] { width: 160px; }
+.filters label { font-size: 13px; color: var(--fg2); display: flex; align-items: center; gap: 4px; }
+
+main { flex: 1; overflow: auto; position: relative; }
+.empty { color: var(--fg3); padding: 40px 24px; }
+
+/* 태그 */
+.tag { display: inline-flex; align-items: center; max-width: 100%; padding: 0 6px; border-radius: 3px; font-size: 12px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--t-fg); background: var(--t-gray); }
+.c-gray { background: var(--t-gray); } .c-brown { background: var(--t-brown); } .c-orange { background: var(--t-orange); }
+.c-yellow { background: var(--t-yellow); } .c-green { background: var(--t-green); } .c-blue { background: var(--t-blue); }
+.c-purple { background: var(--t-purple); } .c-pink { background: var(--t-pink); } .c-red { background: var(--t-red); }
+.tag .dot { width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; background: currentColor; opacity: .6; }
+
+/* 보드 */
+.board { display: flex; gap: 12px; padding: 14px 24px 40px; align-items: flex-start; min-height: 100%; }
+.col { flex: 0 0 272px; background: transparent; border-radius: 6px; }
+.col-head { display: flex; align-items: center; gap: 6px; padding: 4px 2px 8px; font-size: 13px; color: var(--fg2); }
+.col-head .count { color: var(--fg3); }
+.col-body { display: flex; flex-direction: column; gap: 6px; min-height: 40px; padding: 2px; border-radius: 6px; }
+.col-body.over { background: var(--hover); }
+.card { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; box-shadow: 0 1px 1px rgba(15,15,15,.03); cursor: pointer; user-select: none; }
+.card:hover { background: var(--bg2); }
+.card.dragging { opacity: .4; }
+.card .title { font-weight: 600; font-size: 14px; margin-bottom: 4px; word-break: keep-all; overflow-wrap: anywhere; }
+.card .props { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.card .meta { color: var(--fg2); font-size: 12px; margin-top: 4px; display: flex; gap: 8px; flex-wrap: wrap; }
+.card .id { color: var(--fg3); font-size: 11px; }
+.drop-mark { height: 3px; background: var(--accent); border-radius: 2px; margin: -2px 0; }
+.addcard { border: 0; background: none; color: var(--fg3); text-align: left; padding: 6px 8px; border-radius: 6px; font-size: 13px; }
+.addcard:hover { background: var(--hover); color: var(--fg2); }
+
+/* 표 */
+.tablewrap { padding: 10px 24px 40px; }
+table.grid { border-collapse: collapse; width: 100%; min-width: 960px; font-size: 13px; }
+table.grid th, table.grid td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+table.grid th { color: var(--fg2); font-weight: 500; position: sticky; top: 0; background: var(--bg); cursor: pointer; white-space: nowrap; z-index: 1; }
+table.grid th .arrow { color: var(--fg3); }
+table.grid tbody tr { cursor: pointer; }
+table.grid tbody tr:hover { background: var(--bg2); }
+table.grid td.t { font-weight: 600; min-width: 260px; }
+table.grid td.n { color: var(--fg2); white-space: nowrap; }
+
+/* 일정 */
+.tl-tools { display: flex; gap: 6px; align-items: center; padding: 10px 24px 8px; flex-wrap: wrap; font-size: 13px; }
+.seg { display: inline-flex; border: 1px solid var(--line2); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; background: var(--bg); padding: 3px 10px; font-size: 13px; }
+.seg button.on { background: var(--bg3); font-weight: 600; }
+.tl { position: relative; margin: 0 24px 40px; border: 1px solid var(--line); border-radius: 6px; overflow: auto; max-height: calc(100vh - 210px); }
+.tl-inner { position: relative; }
+.tl-row { display: flex; height: 34px; border-bottom: 1px solid var(--line); }
+.tl-row.group { height: 30px; background: var(--bg2); }
+.tl-left { position: sticky; left: 0; z-index: 3; flex: 0 0 280px; width: 280px; background: var(--bg); border-right: 1px solid var(--line); padding: 0 10px; display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; font-size: 13px; cursor: pointer; }
+.tl-row.group .tl-left { background: var(--bg2); font-weight: 600; cursor: default; }
+.tl-left:hover { background: var(--bg2); }
+.tl-left .ttl { overflow: hidden; text-overflow: ellipsis; }
+.tl-left .id { color: var(--fg3); font-size: 11px; flex: none; }
+.tl-track { position: relative; flex: none; }
+.tl-head { position: sticky; top: 0; z-index: 4; background: var(--bg); }
+.tl-head .tl-row { height: auto; }
+.tl-head .tl-left { z-index: 5; font-size: 12px; color: var(--fg2); cursor: default; }
+.tl-months, .tl-days { position: relative; height: 22px; }
+.tl-months span, .tl-days span { position: absolute; top: 0; font-size: 11px; color: var(--fg2); white-space: nowrap; padding-left: 4px; line-height: 22px; border-left: 1px solid var(--line); height: 22px; }
+.tl-months span { font-weight: 600; color: var(--fg); }
+.tl-days span.we { color: var(--fg3); }
+.tl-days span.today { color: #fff; background: var(--danger); border-radius: 3px; }
+.tl-grid-bg { position: absolute; top: 0; bottom: 0; pointer-events: none; }
+.tl-grid-bg .we { position: absolute; top: 0; bottom: 0; background: var(--bg2); }
+.tl-grid-bg .todayline { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--danger); opacity: .7; }
+.bar-el { position: absolute; top: 6px; height: 22px; border-radius: 4px; color: #fff; font-size: 12px; line-height: 22px; padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: grab; box-shadow: 0 1px 2px rgba(0,0,0,.15); z-index: 2; }
+.bar-el.done { opacity: .55; }
+.bar-el .h { position: absolute; top: 0; bottom: 0; width: 7px; cursor: ew-resize; }
+.bar-el .h.l { left: 0; } .bar-el .h.r { right: 0; }
+.bar-el.dragging { cursor: grabbing; opacity: .85; }
+.bar-label { position: absolute; top: 6px; line-height: 22px; font-size: 12px; color: var(--fg2); white-space: nowrap; pointer-events: none; z-index: 2; }
+svg.arrows { position: absolute; top: 0; left: 280px; pointer-events: none; z-index: 1; overflow: visible; }
+svg.arrows path { fill: none; stroke: var(--fg3); stroke-width: 1.4; }
+svg.arrows path.bad { stroke: var(--danger); }
+.bg-gray { background: var(--b-gray); } .bg-brown { background: var(--b-brown); } .bg-orange { background: var(--b-orange); }
+.bg-yellow { background: var(--b-yellow); } .bg-green { background: var(--b-green); } .bg-blue { background: var(--b-blue); }
+.bg-purple { background: var(--b-purple); } .bg-pink { background: var(--b-pink); } .bg-red { background: var(--b-red); }
+
+/* 상세 패널 */
+.panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(520px, 100vw); background: var(--bg); box-shadow: var(--shadow); border-left: 1px solid var(--line); transform: translateX(105%); transition: transform .16s ease; z-index: 20; display: flex; flex-direction: column; }
+.panel.open { transform: none; }
+.panel-top { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.panel-top .spacer { flex: 1; }
+.panel-body { flex: 1; overflow: auto; padding: 18px 28px 40px; }
+.panel textarea.ptitle { width: 100%; border: 0; background: none; font-size: 24px; font-weight: 700; resize: none; outline: none; padding: 0; line-height: 1.3; }
+.prow { display: grid; grid-template-columns: 110px 1fr; align-items: start; gap: 8px; padding: 3px 0; min-height: 32px; }
+.prow > .k { color: var(--fg2); font-size: 13px; padding-top: 5px; }
+.prow > .v { min-width: 0; }
+.prow select, .prow input[type=text], .prow input[type=url], .prow input[type=date], .prow input[type=number] {
+  border: 1px solid transparent; background: none; border-radius: 4px; padding: 4px 6px; width: 100%; font-size: 13px; }
+.prow select:hover, .prow input:hover { background: var(--hover); }
+.prow select:focus, .prow input:focus { border-color: var(--line2); background: var(--bg); outline: none; }
+.dates { display: flex; gap: 4px; align-items: center; }
+.dates input { width: auto !important; flex: 1; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; padding-top: 3px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line2); border-radius: 4px; padding: 0 2px 0 6px; font-size: 12px; max-width: 100%; }
+.chip a { color: var(--fg); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.chip a:hover { text-decoration: underline; }
+.chip .x { border: 0; background: none; color: var(--fg3); padding: 0 4px; }
+.chip .x:hover { color: var(--danger); }
+.chip.bad { border-color: var(--danger); }
+.memo { width: 100%; min-height: 160px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); padding: 10px; resize: vertical; font-size: 14px; line-height: 1.6; margin-top: 6px; }
+.sect { margin-top: 18px; font-size: 13px; color: var(--fg2); font-weight: 600; }
+.muted { color: var(--fg3); font-size: 12px; }
+
+/* 대화상자 */
+dialog { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); padding: 20px 22px; width: min(520px, calc(100vw - 32px)); box-shadow: var(--shadow); }
+dialog::backdrop { background: rgba(15,15,15,.35); }
+dialog h2 { margin: 0 0 12px; font-size: 17px; }
+dialog .f { display: grid; grid-template-columns: 110px 1fr; gap: 8px; align-items: center; margin: 8px 0; font-size: 13px; }
+dialog .f input, dialog .f select { border: 1px solid var(--line2); border-radius: 6px; padding: 5px 8px; background: var(--bg); width: 100%; }
+dialog .note { font-size: 12px; color: var(--fg2); line-height: 1.6; margin: 10px 0 0; }
+dialog .acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #2f2f2f; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 13px; z-index: 50; box-shadow: var(--shadow); opacity: 0; transition: opacity .2s; pointer-events: none; max-width: calc(100vw - 32px); }
+.toast.show { opacity: 1; }
+
+@media (max-width: 720px) {
+  .top, .bar { padding-left: 16px; padding-right: 16px; }
+  .board { padding: 12px 16px 40px; }
+  .tablewrap { padding: 10px 16px 40px; overflow-x: auto; }
+  .tl { margin: 0 16px 40px; }
+  .tl-left { flex-basis: 150px; width: 150px; }
+  svg.arrows { left: 150px; }
+  .panel-body { padding: 16px 16px 40px; }
+  .filters input[type=search] { width: 120px; }
+}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1 id="title">ESG공급망 작업</h1>
+  <span class="sub" id="source"></span>
+  <span class="spacer"></span>
+  <span class="savestate" id="savestate"></span>
+  <button class="btn" id="btnReload" title="다시 불러오기">↻</button>
+  <button class="btn primary" id="btnSave" disabled>저장</button>
+  <button class="btn" id="btnMenu" title="설정">⋯</button>
+</div>
+<div class="banner" id="banner" hidden></div>
+<div class="bar">
+  <button class="tab" data-view="stage">단계별 보드</button>
+  <button class="tab" data-view="status">상태별 보드</button>
+  <button class="tab" data-view="table">표</button>
+  <button class="tab" data-view="timeline">일정</button>
+  <span class="spacer"></span>
+  <div class="filters">
+    <input type="search" id="fq" placeholder="검색">
+    <select id="fsession"><option value="">세션 전체</option></select>
+    <select id="fphase"><option value="">과업 단계 전체</option></select>
+    <label><input type="checkbox" id="fdone">완료 숨기기</label>
+  </div>
+</div>
+<main id="main"><div class="empty">불러오는 중…</div></main>
+
+<aside class="panel" id="panel">
+  <div class="panel-top">
+    <span class="muted" id="pid"></span>
+    <span class="spacer"></span>
+    <span class="savestate" id="psavestate"></span>
+    <button class="btn primary" id="pSave" disabled>저장</button>
+    <button class="iconbtn" id="pcopy" title="링크 복사">🔗</button>
+    <button class="iconbtn" id="pdel" title="삭제">🗑</button>
+    <button class="iconbtn" id="pclose" title="닫기 (Esc)">✕</button>
+  </div>
+  <div class="panel-body" id="pbody"></div>
+</aside>
+
+<dialog id="dlg">
+  <h2>저장 위치 설정</h2>
+  <div class="f"><label for="sMode">모드</label>
+    <select id="sMode">
+      <option value="auto">자동 (로컬 서버면 로컬, 아니면 GitHub)</option>
+      <option value="local">로컬 서버 (scripts/board_server.py)</option>
+      <option value="github">GitHub 저장소</option>
+    </select></div>
+  <div class="f"><label for="sOwner">소유자</label><input id="sOwner" placeholder="dogns754-boop"></div>
+  <div class="f"><label for="sRepo">저장소</label><input id="sRepo" placeholder="esg-supply-chain"></div>
+  <div class="f"><label for="sBranch">브랜치</label><input id="sBranch" placeholder="main"></div>
+  <div class="f"><label for="sPath">파일 경로</label><input id="sPath" placeholder="board/tasks.json"></div>
+  <div class="f"><label for="sToken">토큰</label><input id="sToken" type="password" autocomplete="off" placeholder="github_pat_…"></div>
+  <p class="note">토큰은 이 브라우저(localStorage)에만 저장되고 GitHub API(api.github.com)로만 보냅니다. GitHub 설정 → Developer settings → Fine-grained token에서 이 저장소 하나만 고르고 Contents 권한을 Read and write로 주어 만듭니다.</p>
+  <div class="f"><label for="sTheme">화면</label>
+    <select id="sTheme"><option value="">시스템 설정</option><option value="light">밝게</option><option value="dark">어둡게</option></select></div>
+  <div class="acts">
+    <button class="btn" id="sExport">JSON 내려받기</button>
+    <span style="flex:1"></span>
+    <button class="btn" id="sCancel">닫기</button>
+    <button class="btn primary" id="sOk">저장하고 다시 불러오기</button>
+  </div>
+</dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ---------- 기본 ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ls = {
+  get(k, d = null) { try { const v = localStorage.getItem("esgboard." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("esgboard." + k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem("esgboard." + k); } catch {} },
+};
+const DEFAULT_GH = { owner: "dogns754-boop", repo: "esg-supply-chain", branch: "main", path: "board/tasks.json" };
+const FIELD_KEYS = ["status", "stage", "phase", "priority", "session"];
+
+const S = {
+  data: null, version: null, mode: null, dirty: false, changed: new Set(),
+  view: ls.get("view", "stage"), scale: ls.get("scale", "week"), groupTl: ls.get("groupTl", true),
+  sort: ls.get("sort", { key: "order", dir: 1 }),
+  f: { q: "", session: "", phase: "", hideDone: ls.get("hideDone", false) },
+  openId: null,
+};
+
+function toast(msg, ms = 2400) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), ms);
+}
+function applyTheme() { const t = ls.get("theme", ""); if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; }
+
+/* ---------- 날짜 ---------- */
+const DAY = 86400000;
+const pd = s => { if (!s) return null; const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+const fd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const diffDays = (a, b) => Math.round((a - b) / DAY);
+const short = s => { const d = pd(s); return d ? `${d.getMonth() + 1}.${d.getDate()}` : ""; };
+const today = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); };
+function rangeText(t) { if (!t.start) return ""; return t.end && t.end !== t.start ? `${short(t.start)} → ${short(t.end)}` : short(t.start); }
+
+/* ---------- 데이터 접근 ---------- */
+const tasks = () => S.data.tasks;
+const byId = id => tasks().find(t => t.id === id);
+const opts = key => S.data.fields[key]?.options || [];
+const label = key => S.data.fields[key]?.label || key;
+const colorOf = (key, val) => (opts(key).find(o => o.name === val) || {}).color || "gray";
+const isDone = t => (opts("status").find(o => o.name === t.status) || {}).group === "done";
+const succOf = id => tasks().filter(t => (t.deps || []).includes(id));
+function tag(key, val) { if (!val) return ""; return `<span class="tag c-${colorOf(key, val)}">${key === "status" ? '<span class="dot"></span>' : ""}${esc(val)}</span>`; }
+
+function filtered() {
+  const q = S.f.q.trim().toLowerCase();
+  return tasks().filter(t => {
+    if (S.f.hideDone && isDone(t)) return false;
+    if (S.f.session && t.session !== S.f.session) return false;
+    if (S.f.phase && t.phase !== S.f.phase) return false;
+    if (q && !(`${t.id} ${t.title} ${t.memo} ${t.wbs}`.toLowerCase().includes(q))) return false;
+    return true;
+  }).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
+function wouldCycle(taskId, candId) {
+  const seen = new Set(); const stack = [candId];
+  while (stack.length) {
+    const id = stack.pop(); if (id === taskId) return true;
+    if (seen.has(id)) continue; seen.add(id);
+    (byId(id)?.deps || []).forEach(d => stack.push(d));
+  }
+  return false;
+}
+
+function touch(t) {
+  S.dirty = true; if (t) S.changed.add(t.id);
+  ls.set("draft", { base: S.version, mode: S.mode, data: S.data, changed: [...S.changed] });
+  renderState();
+}
+
+/* ---------- 불러오기·저장 ---------- */
+function ghCfg() { return { ...DEFAULT_GH, ...ls.get("gh", {}) }; }
+function resolveMode() {
+  const m = ls.get("mode", "auto");
+  if (m !== "auto") return m;
+  const h = location.hostname;
+  return (h === "localhost" || h === "127.0.0.1" || location.protocol === "file:") ? "local" : "github";
+}
+function b64ToText(b64) { const bin = atob(b64.replace(/\s/g, "")); return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))); }
+function textToB64(text) { const bytes = new TextEncoder().encode(text); let s = ""; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s); }
+function ghHeaders() { const c = ghCfg(); const h = { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" }; if (c.token) h.Authorization = "Bearer " + c.token; return h; }
+function ghUrl() { const c = ghCfg(); return `https://api.github.com/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${c.path.split("/").map(encodeURIComponent).join("/")}`; }
+
+async function fetchRemote() {
+  if (S.mode === "local") {
+    const r = await fetch("tasks.json?ts=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error(`tasks.json을 읽지 못했습니다 (${r.status})`);
+    return { data: await r.json(), version: r.headers.get("ETag") || null };
+  }
+  const c = ghCfg();
+  if (!c.token) throw new Error("NO_TOKEN");
+  const r = await fetch(ghUrl() + "?ref=" + encodeURIComponent(c.branch) + "&ts=" + Date.now(), { headers: ghHeaders(), cache: "no-store" });
+  if (!r.ok) throw new Error(`GitHub에서 읽지 못했습니다 (${r.status}). 토큰 권한과 저장소 설정을 확인하세요.`);
+  const j = await r.json();
+  return { data: JSON.parse(b64ToText(j.content)), version: j.sha };
+}
+
+async function load(keepOpen) {
+  S.mode = resolveMode();
+  const c = ghCfg();
+  $("#source").textContent = S.mode === "local" ? "로컬 · board/tasks.json" : `GitHub · ${c.owner}/${c.repo}@${c.branch}`;
+  try {
+    const { data, version } = await fetchRemote();
+    validate(data);
+    S.data = data; S.version = version; S.dirty = false; S.changed = new Set();
+    const draft = ls.get("draft");
+    if (draft && draft.mode === S.mode && draft.data) {
+      if (draft.base === version) showBanner(`저장하지 않은 변경 ${draft.changed.length}건이 이 브라우저에 남아 있습니다.`, [["복원", () => { S.data = draft.data; S.changed = new Set(draft.changed); S.dirty = true; hideBanner(); render(); }], ["버리기", () => { ls.del("draft"); hideBanner(); }]]);
+      else showBanner("이 브라우저에 남은 변경은 그 뒤 원본이 바뀌어 복원할 수 없습니다. 필요하면 JSON으로 내려받아 비교하세요.", [["내려받기", () => download(draft.data, "tasks-draft.json")], ["버리기", () => { ls.del("draft"); hideBanner(); }]]);
+    } else hideBanner();
+    $("#title").textContent = data.meta?.title || "작업 보드";
+    document.title = (data.meta?.title || "작업 보드") + " 보드";
+    fillFilters(); render();
+    if (!keepOpen) openFromHash(); else if (S.openId && byId(S.openId)) openPanel(S.openId);
+  } catch (e) {
+    if (e.message === "NO_TOKEN") {
+      $("#main").innerHTML = `<div class="empty">GitHub에서 불러오려면 토큰이 필요합니다. 오른쪽 위 ⋯ 설정에서 토큰을 넣어 주세요.</div>`;
+      openSettings();
+    } else {
+      $("#main").innerHTML = `<div class="empty">${esc(e.message)}<br><br>로컬에서는 <code>python scripts/board_server.py</code>로 열어야 저장할 수 있습니다.</div>`;
+    }
+  }
+}
+
+function validate(d) {
+  if (!d || !Array.isArray(d.tasks) || !d.fields) throw new Error("tasks.json 형식이 아닙니다 (fields, tasks 필요).");
+  d.meta = d.meta || {};
+  d.tasks.forEach(t => { t.deps = Array.isArray(t.deps) ? t.deps : []; for (const k of ["title", "memo", "wbs", "start", "end", "output"]) if (t[k] == null) t[k] = ""; });
+}
+
+function serialize(d) {
+  const ind = s => s.replace(/\n/g, "\n  ");
+  return "{\n" +
+    `  "meta": ${ind(JSON.stringify(d.meta, null, 2))},\n` +
+    `  "fields": ${ind(JSON.stringify(d.fields, null, 2))},\n` +
+    `  "tasks": [\n` + d.tasks.map(t => "    " + oneLine(t)).join(",\n") + "\n  ]\n}\n";
+}
+// Python json.dumps(obj, ensure_ascii=False)와 같은 모양(", " / ": ")
+function oneLine(v) {
+  if (Array.isArray(v)) return "[" + v.map(oneLine).join(", ") + "]";
+  if (v && typeof v === "object") return "{" + Object.entries(v).map(([k, x]) => JSON.stringify(k) + ": " + oneLine(x)).join(", ") + "}";
+  return JSON.stringify(v);
+}
+
+async function save() {
+  if (!S.dirty) return;
+  S.data.meta.updated = fd(today());
+  const text = serialize(S.data);
+  const btns = [$("#btnSave"), $("#pSave")]; btns.forEach(x => { x.disabled = true; x.textContent = "저장 중…"; });
+  try {
+    if (S.mode === "local") {
+      const r = await fetch("tasks.json", { method: "PUT", headers: { "Content-Type": "application/json", ...(S.version ? { "If-Match": S.version } : {}) }, body: text });
+      if (r.status === 409) return conflict();
+      if (r.status === 405 || r.status === 501) throw new Error("이 서버는 저장을 받지 않습니다. scripts/board_server.py로 여세요.");
+      if (!r.ok) throw new Error("저장 실패 (" + r.status + ")");
+      S.version = r.headers.get("ETag") || S.version;
+    } else {
+      const c = ghCfg();
+      const ids = [...S.changed]; const msg = "보드 수정: " + (ids.length ? ids.slice(0, 6).join(", ") + (ids.length > 6 ? ` 외 ${ids.length - 6}건` : "") : "정리");
+      const r = await fetch(ghUrl(), { method: "PUT", headers: { ...ghHeaders(), "Content-Type": "application/json" }, body: JSON.stringify({ message: msg, content: textToB64(text), sha: S.version, branch: c.branch }) });
+      if (r.status === 409 || r.status === 422) return conflict();
+      if (!r.ok) throw new Error("GitHub 저장 실패 (" + r.status + ")");
+      S.version = (await r.json()).content.sha;
+    }
+    S.dirty = false; S.changed = new Set(); ls.del("draft"); toast("저장했습니다");
+  } catch (e) { toast(e.message, 4000); }
+  finally { btns.forEach(x => x.textContent = "저장"); renderState(); }
+}
+
+function conflict() {
+  showBanner("다른 곳(클로드 코드 세션 등)에서 tasks.json이 먼저 바뀌었습니다. 내 변경은 이 브라우저에 남아 있습니다.", [
+    ["다시 불러오기(내 변경 버림)", () => { ls.del("draft"); load(true); }],
+    ["내 변경 내려받기", () => download(S.data, "tasks-mine.json")],
+  ]);
+  renderState();
+}
+
+function download(data, name) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([serialize(data)], { type: "application/json" }));
+  a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function showBanner(text, actions = []) {
+  const b = $("#banner"); b.hidden = false; b.innerHTML = `<span>${esc(text)}</span>`;
+  actions.forEach(([l, fn]) => { const x = document.createElement("button"); x.className = "btn"; x.textContent = l; x.onclick = fn; b.appendChild(x); });
+}
+function hideBanner() { $("#banner").hidden = true; }
+
+/* ---------- 화면 ---------- */
+function renderState() {
+  const text = S.dirty ? `저장 안 된 변경 ${S.changed.size}건` : (S.data ? "저장됨" : "");
+  [["#savestate", "#btnSave"], ["#psavestate", "#pSave"]].forEach(([si, bi]) => {
+    $(bi).disabled = !S.dirty;
+    $(si).className = "savestate" + (S.dirty ? " dirty" : "");
+    $(si).textContent = text;
+  });
+}
+function fillFilters() {
+  const fill = (sel, key, first) => { sel.innerHTML = `<option value="">${first}</option>` + opts(key).map(o => `<option>${esc(o.name)}</option>`).join(""); };
+  fill($("#fsession"), "session", "세션 전체"); fill($("#fphase"), "phase", "과업 단계 전체");
+  $("#fsession").value = S.f.session; $("#fphase").value = S.f.phase; $("#fdone").checked = S.f.hideDone;
+}
+function render() {
+  if (!S.data) return;
+  $$(".tab").forEach(b => b.classList.toggle("on", b.dataset.view === S.view));
+  const m = $("#main"); const sx = m.scrollLeft, sy = m.scrollTop;
+  const tlScroll = $(".tl") ? [$(".tl").scrollLeft, $(".tl").scrollTop] : null;
+  if (S.view === "stage") renderBoard("stage");
+  else if (S.view === "status") renderBoard("status");
+  else if (S.view === "table") renderTable();
+  else renderTimeline(tlScroll);
+  m.scrollLeft = sx; m.scrollTop = sy;
+  renderState();
+  if (S.openId) refreshPanel();
+}
+
+/* 보드 */
+function cardHtml(t) {
+  const other = S.view === "stage" ? "status" : "stage";
+  const meta = [];
+  if (t.start) meta.push("📅 " + rangeText(t));
+  if (t.session) meta.push(esc(t.session));
+  if (t.deps.length) meta.push(`선행 ${t.deps.length}`);
+  if (t.review) meta.push("검토 지점");
+  return `<div class="card" draggable="true" data-id="${esc(t.id)}">
+    <div class="title">${esc(t.title) || '<span class="muted">제목 없음</span>'}</div>
+    <div class="props">${tag(other, t[other])}${t.priority === "높음" ? tag("priority", t.priority) : ""}</div>
+    <div class="meta"><span class="id">${esc(t.id)}</span>${meta.map(x => `<span>${x}</span>`).join("")}</div></div>`;
+}
+function renderBoard(key) {
+  const list = filtered();
+  const cols = opts(key).map(o => o.name);
+  if (list.some(t => !t[key])) cols.push("");
+  $("#main").innerHTML = `<div class="board">${cols.map(c => {
+    const items = list.filter(t => (t[key] || "") === c);
+    return `<div class="col" data-val="${esc(c)}">
+      <div class="col-head">${c ? tag(key, c) : '<span class="tag">없음</span>'}<span class="count">${items.length}</span></div>
+      <div class="col-body">${items.map(cardHtml).join("")}</div>
+      <button class="addcard" data-val="${esc(c)}">＋ 새 작업</button></div>`;
+  }).join("")}</div>`;
+  bindBoard(key);
+}
+function bindBoard(key) {
+  let dragId = null;
+  $$(".card").forEach(c => {
+    c.onclick = () => openPanel(c.dataset.id);
+    c.ondragstart = e => { dragId = c.dataset.id; c.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", dragId); };
+    c.ondragend = () => { c.classList.remove("dragging"); $$(".drop-mark").forEach(x => x.remove()); $$(".col-body.over").forEach(x => x.classList.remove("over")); };
+  });
+  $$(".col").forEach(col => {
+    const body = $(".col-body", col);
+    const after = y => $$(".card:not(.dragging)", body).find(c => { const r = c.getBoundingClientRect(); return y < r.top + r.height / 2; });
+    col.ondragover = e => {
+      if (!dragId) return; e.preventDefault(); body.classList.add("over");
+      $$(".drop-mark").forEach(x => x.remove());
+      const m = document.createElement("div"); m.className = "drop-mark";
+      const ref = after(e.clientY); ref ? body.insertBefore(m, ref) : body.appendChild(m);
+    };
+    col.ondragleave = e => { if (!col.contains(e.relatedTarget)) { body.classList.remove("over"); $$(".drop-mark", col).forEach(x => x.remove()); } };
+    col.ondrop = e => {
+      e.preventDefault(); const t = byId(dragId); if (!t) return;
+      const ref = after(e.clientY);
+      const sibs = $$(".card:not(.dragging)", body).map(c => byId(c.dataset.id));
+      const idx = ref ? sibs.findIndex(s => s.id === ref.dataset.id) : sibs.length;
+      const prev = sibs[idx - 1], next = sibs[idx];
+      let order;
+      if (prev && next) order = (prev.order + next.order) / 2;
+      else if (prev) order = Math.floor(prev.order) + 1;
+      else if (next) order = next.order - 1;
+      else order = t.order;
+      t[key] = col.dataset.val; t.order = Math.round(order * 1000) / 1000;
+      dragId = null; touch(t); render();
+    };
+  });
+  $$(".addcard").forEach(b => b.onclick = () => newTask({ [key]: b.dataset.val }));
+}
+
+/* 표 */
+const COLS = [
+  ["id", "ID"], ["order", "순서"], ["title", "작업명"], ["status", "상태"], ["stage", "단계"], ["phase", "과업 단계"],
+  ["priority", "우선순위"], ["session", "작업 세션"], ["start", "기간"], ["review", "검토"], ["deps", "선행 작업"], ["wbs", "WBS"],
+];
+function renderTable() {
+  const { key, dir } = S.sort;
+  const val = t => key === "deps" ? t.deps.length : key === "id" ? Number(t.id.replace(/\D/g, "")) : key === "review" ? (t.review ? 1 : 0) : (t[key] ?? "");
+  const list = filtered().sort((a, b) => { const x = val(a), y = val(b); return (x > y ? 1 : x < y ? -1 : 0) * dir; });
+  $("#main").innerHTML = `<div class="tablewrap"><table class="grid"><thead><tr>${COLS.map(([k, l]) => `<th data-k="${k}">${l}${k === key ? ` <span class="arrow">${dir > 0 ? "↑" : "↓"}</span>` : ""}</th>`).join("")}</tr></thead><tbody>${list.map(t => `<tr data-id="${esc(t.id)}">
+    <td class="n">${esc(t.id)}</td><td class="n">${t.order ?? ""}</td><td class="t">${esc(t.title)}</td>
+    <td>${tag("status", t.status)}</td><td>${tag("stage", t.stage)}</td><td>${tag("phase", t.phase)}</td><td>${tag("priority", t.priority)}</td><td>${tag("session", t.session)}</td>
+    <td class="n">${rangeText(t)}</td><td>${t.review ? "✓" : ""}</td><td class="n">${t.deps.map(esc).join(", ")}</td><td class="n">${esc(t.wbs)}</td></tr>`).join("")}</tbody></table>
+    ${list.length ? "" : '<div class="empty">조건에 맞는 작업이 없습니다.</div>'}</div>`;
+  $$("th").forEach(th => th.onclick = () => { const k = th.dataset.k; S.sort = { key: k, dir: S.sort.key === k ? -S.sort.dir : 1 }; ls.set("sort", S.sort); render(); });
+  $$("tbody tr").forEach(tr => tr.onclick = () => openPanel(tr.dataset.id));
+}
+
+/* 일정 */
+const SCALES = { day: { px: 30, name: "일" }, week: { px: 14, name: "주" }, month: { px: 5, name: "월" } };
+const ROW = 34, LEFT = () => (matchMedia("(max-width: 720px)").matches ? 150 : 280);
+function renderTimeline(prevScroll) {
+  const list = filtered();
+  const dated = list.filter(t => t.start), undated = list.filter(t => !t.start);
+  const px = SCALES[S.scale].px;
+  const t0 = today();
+  let min = dated.length ? dated.reduce((m, t) => pd(t.start) < m ? pd(t.start) : m, pd(dated[0].start)) : t0;
+  let max = dated.length ? dated.reduce((m, t) => { const e = pd(t.end || t.start); return e > m ? e : m; }, pd(dated[0].end || dated[0].start)) : addDays(t0, 30);
+  if (t0 < min) min = t0; if (t0 > max) max = t0;
+  min = addDays(min, -7); max = addDays(max, 14);
+  if (S.scale !== "day") min = addDays(min, -((min.getDay() + 6) % 7)); // 월요일부터
+  const days = diffDays(max, min) + 1, W = days * px;
+  const x = s => diffDays(pd(s), min) * px;
+
+  // 행 구성
+  const rows = [];
+  if (S.groupTl) {
+    const groups = opts("stage").map(o => o.name); if (list.some(t => !t.stage)) groups.push("");
+    groups.forEach(g => { const items = dated.filter(t => (t.stage || "") === g); if (items.length) { rows.push({ group: g }); items.forEach(t => rows.push({ t })); } });
+  } else dated.forEach(t => rows.push({ t }));
+  if (undated.length) { rows.push({ group: "날짜 없음", nodate: true }); undated.forEach(t => rows.push({ t, nodate: true })); }
+  const rowY = {}; let y = 0;
+  rows.forEach(r => { r.y = y; if (r.t && !r.nodate) rowY[r.t.id] = y; y += r.group !== undefined ? 30 : ROW; });
+  const H = y;
+
+  // 머리글(월·일)
+  let months = "", ticks = "", bg = "";
+  for (let i = 0; i < days; i++) {
+    const d = addDays(min, i), we = d.getDay() === 0 || d.getDay() === 6;
+    if (d.getDate() === 1 || i === 0) months += `<span style="left:${i * px}px">${d.getFullYear()}.${d.getMonth() + 1}</span>`;
+    const isToday = +d === +t0;
+    if (S.scale === "day") ticks += `<span class="${we ? "we" : ""}${isToday ? " today" : ""}" style="left:${i * px}px;width:${px}px">${d.getDate()}</span>`;
+    else if (S.scale === "week" && d.getDay() === 1) ticks += `<span class="${isToday ? "today" : ""}" style="left:${i * px}px">${d.getMonth() + 1}.${d.getDate()}</span>`;
+    if (we && S.scale !== "month") bg += `<div class="we" style="left:${i * px}px;width:${px}px"></div>`;
+  }
+  bg += `<div class="todayline" style="left:${diffDays(t0, min) * px + px / 2 - 1}px"></div>`;
+
+  // 행 HTML
+  const body = rows.map(r => {
+    if (r.group !== undefined) return `<div class="tl-row group"><div class="tl-left">${r.nodate ? "날짜 없음" : (r.group ? tag("stage", r.group) : "단계 없음")}</div><div class="tl-track" style="width:${W}px"></div></div>`;
+    const t = r.t;
+    let bar = "";
+    if (!r.nodate) {
+      const L = x(t.start), R = x(t.end || t.start) + px, w = Math.max(R - L, px);
+      const lab = w < 140 ? `<span class="bar-label" style="left:${L + w + 6}px">${esc(t.title)}</span>` : "";
+      bar = `<div class="bar-el bg-${colorOf("stage", t.stage)}${isDone(t) ? " done" : ""}" data-id="${esc(t.id)}" style="left:${L}px;width:${w}px" title="${esc(t.title)} · ${rangeText(t)}"><span class="h l"></span>${w >= 140 ? esc(t.title) : ""}<span class="h r"></span></div>${lab}`;
+    }
+    return `<div class="tl-row"><div class="tl-left" data-id="${esc(t.id)}"><span class="id">${esc(t.id)}</span><span class="ttl">${esc(t.title)}</span></div><div class="tl-track" style="width:${W}px">${bar}</div></div>`;
+  }).join("");
+
+  // 종속성 화살표
+  let paths = "";
+  dated.forEach(t => t.deps.forEach(d => {
+    const p = byId(d); if (!p || !p.start || rowY[p.id] === undefined || rowY[t.id] === undefined) return;
+    const x1 = x(p.end || p.start) + px, y1 = rowY[p.id] + ROW / 2;
+    const x2 = x(t.start), y2 = rowY[t.id] + ROW / 2;
+    const bad = pd(t.start) < pd(p.end || p.start);
+    let dpath;
+    if (x2 - x1 >= 16) dpath = `M${x1},${y1} H${x1 + 8} V${y2} H${x2 - 2}`;
+    else { const mid = y2 > y1 ? rowY[t.id] - 2 : rowY[t.id] + ROW + 2; dpath = `M${x1},${y1} H${x1 + 8} V${mid} H${x2 - 10} V${y2} H${x2 - 2}`; }
+    paths += `<path class="${bad ? "bad" : ""}" d="${dpath}" marker-end="url(#${bad ? "ahb" : "ah"})"><title>${esc(p.id)} → ${esc(t.id)}</title></path>`;
+  }));
+
+  $("#main").innerHTML = `<div class="tl-tools">
+      <span class="seg">${Object.entries(SCALES).map(([k, v]) => `<button data-scale="${k}" class="${k === S.scale ? "on" : ""}">${v.name}</button>`).join("")}</span>
+      <button class="btn" id="tlToday">오늘</button>
+      <label><input type="checkbox" id="tlGroup" ${S.groupTl ? "checked" : ""}> 단계별로 묶기</label>
+      <span class="muted">막대를 끌면 날짜가 바뀌고, 끝을 끌면 기간이 바뀝니다. 빨간 화살표는 선행 작업보다 먼저 시작하는 작업입니다.</span>
+    </div>
+    <div class="tl"><div class="tl-inner" style="width:${LEFT() + W}px">
+      <div class="tl-head">
+        <div class="tl-row"><div class="tl-left">작업</div><div class="tl-track" style="width:${W}px"><div class="tl-months">${months}</div><div class="tl-days">${ticks}</div></div></div>
+      </div>
+      <div style="position:relative">
+        <div class="tl-grid-bg" style="left:${LEFT()}px;width:${W}px;height:${H}px">${bg}</div>
+        ${body}
+        <svg class="arrows" width="${W}" height="${H}">
+          <defs>
+            <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill:var(--fg3);stroke:none"/></marker>
+            <marker id="ahb" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill:var(--danger);stroke:none"/></marker>
+          </defs>${paths}</svg>
+      </div>
+    </div></div>`;
+
+  const tl = $(".tl");
+  const scrollToToday = () => { tl.scrollLeft = Math.max(0, diffDays(t0, min) * px - 200); };
+  if (prevScroll && renderTimeline._scale === S.scale) { tl.scrollLeft = prevScroll[0]; tl.scrollTop = prevScroll[1]; } else scrollToToday();
+  renderTimeline._scale = S.scale;
+  $$("[data-scale]").forEach(b => b.onclick = () => { S.scale = b.dataset.scale; ls.set("scale", S.scale); render(); });
+  $("#tlToday").onclick = scrollToToday;
+  $("#tlGroup").onchange = e => { S.groupTl = e.target.checked; ls.set("groupTl", S.groupTl); render(); };
+  $$(".tl-left[data-id]").forEach(el => el.onclick = () => openPanel(el.dataset.id));
+  $$(".bar-el").forEach(el => bindBar(el, px));
+}
+function bindBar(el, px) {
+  el.onpointerdown = e => {
+    if (e.button !== 0) return;
+    const t = byId(el.dataset.id); const mode = e.target.classList.contains("l") ? "l" : e.target.classList.contains("r") ? "r" : "m";
+    const x0 = e.clientX, L0 = el.offsetLeft, W0 = el.offsetWidth; let dd = 0; let moved = false;
+    el.setPointerCapture(e.pointerId); el.classList.add("dragging");
+    el.onpointermove = ev => {
+      dd = Math.round((ev.clientX - x0) / px); if (Math.abs(ev.clientX - x0) > 3) moved = true;
+      if (mode === "m") el.style.left = L0 + dd * px + "px";
+      else if (mode === "r") el.style.width = Math.max(px, W0 + dd * px) + "px";
+      else { const nw = W0 - dd * px; if (nw >= px) { el.style.left = L0 + dd * px + "px"; el.style.width = nw + "px"; } }
+    };
+    el.onpointerup = () => {
+      el.onpointermove = el.onpointerup = null; el.classList.remove("dragging");
+      if (!moved) { openPanel(t.id); return; }
+      if (dd === 0) return render();
+      const s = pd(t.start), e2 = pd(t.end || t.start);
+      if (mode === "m") { t.start = fd(addDays(s, dd)); if (t.end) t.end = fd(addDays(e2, dd)); }
+      else if (mode === "r") { const ne = addDays(e2, dd); t.end = ne <= s ? "" : fd(ne); }
+      else { const ns = addDays(s, dd); if (ns <= e2) { t.start = fd(ns); if (!t.end) t.end = fd(e2); if (t.end === t.start) t.end = ""; } }
+      touch(t); render();
+    };
+  };
+}
+
+/* ---------- 상세 패널 ---------- */
+function openPanel(id) {
+  S.openId = id; $("#panel").classList.add("open");
+  if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+  refreshPanel();
+}
+function closePanel() { S.openId = null; $("#panel").classList.remove("open"); history.replaceState(null, "", location.pathname + location.search); }
+function openFromHash() { const id = decodeURIComponent(location.hash.slice(1)); if (id && byId(id)) openPanel(id); }
+
+function refreshPanel() {
+  const t = byId(S.openId); if (!t) return closePanel();
+  const active = document.activeElement; const focusKey = active?.dataset?.k; const selStart = active?.selectionStart;
+  $("#pid").textContent = t.id;
+  const sel = key => `<select data-k="${key}"><option value=""></option>${opts(key).map(o => `<option ${o.name === t[key] ? "selected" : ""}>${esc(o.name)}</option>`).join("")}</select>`;
+  const chip = (id, removable) => { const o = byId(id); const bad = o && t.start && o.start && removable && pd(t.start) < pd(o.end || o.start);
+    return `<span class="chip${bad ? " bad" : ""}" title="${bad ? "선행 작업이 끝나기 전에 시작합니다" : ""}"><a data-go="${esc(id)}">${esc(id)} ${esc(o ? o.title : "(없는 작업)")}</a>${removable ? `<button class="x" data-rm="${esc(id)}" title="빼기">×</button>` : ""}</span>`; };
+  const cands = tasks().filter(o => o.id !== t.id && !t.deps.includes(o.id) && !wouldCycle(t.id, o.id)).sort((a, b) => a.order - b.order);
+  const succ = succOf(t.id);
+  $("#pbody").innerHTML = `
+    <textarea class="ptitle" data-k="title" rows="1" placeholder="제목 없음">${esc(t.title)}</textarea>
+    <div style="margin-top:12px">
+      ${FIELD_KEYS.map(k => `<div class="prow"><div class="k">${esc(label(k))}</div><div class="v">${sel(k)}</div></div>`).join("")}
+      <div class="prow"><div class="k">기간</div><div class="v dates"><input type="date" data-k="start" value="${esc(t.start)}"><span class="muted">→</span><input type="date" data-k="end" value="${esc(t.end)}"></div></div>
+      <div class="prow"><div class="k">검토 지점</div><div class="v"><label style="display:flex;gap:6px;align-items:center;padding-top:5px;font-size:13px"><input type="checkbox" data-k="review" ${t.review ? "checked" : ""}> 끝나면 멈추고 사용자 검토</label></div></div>
+      <div class="prow"><div class="k">순서</div><div class="v"><input type="number" step="any" data-k="order" value="${t.order ?? ""}"></div></div>
+      <div class="prow"><div class="k">WBS</div><div class="v"><input type="text" data-k="wbs" value="${esc(t.wbs)}"></div></div>
+      <div class="prow"><div class="k">산출물</div><div class="v" style="display:flex;gap:4px;align-items:center"><input type="url" data-k="output" value="${esc(t.output)}" placeholder="링크">${t.output ? `<a href="${esc(t.output)}" target="_blank" rel="noopener" title="열기">↗</a>` : ""}</div></div>
+      <div class="prow"><div class="k">선행 작업</div><div class="v"><div class="chips">${t.deps.map(d => chip(d, true)).join("")}</div>
+        <select data-add style="margin-top:4px"><option value="">＋ 선행 작업 추가</option>${cands.map(o => `<option value="${esc(o.id)}">${esc(o.id)} ${esc(o.title)}</option>`).join("")}</select></div></div>
+      <div class="prow"><div class="k">후속 작업</div><div class="v"><div class="chips">${succ.length ? succ.map(o => chip(o.id, false)).join("") : '<span class="muted" style="padding-top:5px">없음</span>'}</div></div></div>
+    </div>
+    <div class="sect">메모</div>
+    <textarea class="memo" data-k="memo" placeholder="메모">${esc(t.memo)}</textarea>`;
+  const ta = $(".ptitle"); const fit = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; }; fit();
+  $$("#pbody [data-k]").forEach(el => {
+    const k = el.dataset.k;
+    const apply = () => {
+      let v = el.type === "checkbox" ? el.checked : el.value;
+      if (k === "order") v = v === "" ? 0 : Number(v);
+      if (k === "title") v = v.replace(/\n/g, " ");
+      if (t[k] === v) return;
+      t[k] = v;
+      if (k === "end" && t.end && t.start && t.end < t.start) t.end = "";
+      if (k === "start" && t.end && t.start && t.end < t.start) t.end = "";
+      if (t.end && t.end === t.start) t.end = "";
+      touch(t);
+    };
+    if (el.tagName === "SELECT" || el.type === "checkbox" || el.type === "date") el.onchange = () => { apply(); render(); };
+    else { el.oninput = () => { if (k === "title") fit(); apply(); }; el.onchange = () => render(); }
+  });
+  $("[data-add]").onchange = e => { if (!e.target.value) return; t.deps.push(e.target.value); touch(t); render(); };
+  $$("[data-rm]").forEach(b => b.onclick = () => { t.deps = t.deps.filter(d => d !== b.dataset.rm); touch(t); render(); });
+  $$("[data-go]").forEach(a => a.onclick = () => openPanel(a.dataset.go));
+  if (focusKey) { const el = $(`#pbody [data-k="${focusKey}"]`); if (el && el.tagName !== "SELECT") { el.focus(); try { if (selStart != null) el.setSelectionRange(selStart, selStart); } catch {} } }
+}
+
+function newTask(preset = {}) {
+  const meta = S.data.meta;
+  let n = meta.next_id || 1; while (byId("ESG-" + n)) n++;
+  meta.next_id = n + 1;
+  const sameCol = Object.entries(preset).length ? tasks().filter(t => Object.entries(preset).every(([k, v]) => (t[k] || "") === v)) : tasks();
+  const order = sameCol.length ? Math.floor(Math.max(...sameCol.map(t => t.order || 0))) + 1 : Math.floor(Math.max(0, ...tasks().map(t => t.order || 0))) + 1;
+  const t = { id: "ESG-" + n, order, title: "", stage: "", phase: "", status: "대기", priority: "보통", session: "", wbs: "", start: "", end: "", review: false, output: "", deps: [], memo: "", ...preset };
+  tasks().push(t); touch(t); render(); openPanel(t.id);
+  setTimeout(() => $(".ptitle")?.focus(), 50);
+}
+function deleteTask(id) {
+  const t = byId(id); if (!t) return;
+  if (!confirm(`${t.id} "${t.title || "제목 없음"}"을(를) 지울까요? 다른 작업의 선행 작업 연결도 함께 빠집니다.`)) return;
+  S.data.tasks = tasks().filter(x => x.id !== id);
+  tasks().forEach(x => { if (x.deps.includes(id)) { x.deps = x.deps.filter(d => d !== id); S.changed.add(x.id); } });
+  S.changed.add(id); closePanel(); touch(); render();
+}
+
+/* ---------- 설정 ---------- */
+function openSettings() {
+  const c = ghCfg();
+  $("#sMode").value = ls.get("mode", "auto"); $("#sOwner").value = c.owner; $("#sRepo").value = c.repo; $("#sBranch").value = c.branch; $("#sPath").value = c.path;
+  $("#sToken").value = c.token || ""; $("#sTheme").value = ls.get("theme", "");
+  $("#dlg").showModal();
+}
+$("#sCancel").onclick = () => $("#dlg").close();
+$("#sExport").onclick = () => S.data && download(S.data, "tasks.json");
+$("#sTheme").onchange = e => { ls.set("theme", e.target.value); applyTheme(); };
+$("#sOk").onclick = () => {
+  ls.set("mode", $("#sMode").value);
+  ls.set("gh", { owner: $("#sOwner").value.trim() || DEFAULT_GH.owner, repo: $("#sRepo").value.trim() || DEFAULT_GH.repo, branch: $("#sBranch").value.trim() || DEFAULT_GH.branch, path: $("#sPath").value.trim() || DEFAULT_GH.path, token: $("#sToken").value.trim() });
+  $("#dlg").close();
+  if (S.dirty && !confirm("저장하지 않은 변경은 이 브라우저에 남겨 두고 다시 불러올까요?")) return;
+  load();
+};
+
+/* ---------- 이벤트 ---------- */
+$$(".tab").forEach(b => b.onclick = () => { S.view = b.dataset.view; ls.set("view", S.view); render(); });
+$("#fq").oninput = e => { S.f.q = e.target.value; render(); };
+$("#fsession").onchange = e => { S.f.session = e.target.value; render(); };
+$("#fphase").onchange = e => { S.f.phase = e.target.value; render(); };
+$("#fdone").onchange = e => { S.f.hideDone = e.target.checked; ls.set("hideDone", S.f.hideDone); render(); };
+$("#btnSave").onclick = save;
+$("#pSave").onclick = save;
+$("#btnReload").onclick = () => { if (S.dirty && !confirm("저장하지 않은 변경이 있습니다. 변경은 이 브라우저에 남겨 두고 원본을 다시 불러올까요?")) return; load(true); };
+$("#btnMenu").onclick = openSettings;
+$("#pclose").onclick = closePanel;
+$("#pdel").onclick = () => deleteTask(S.openId);
+$("#pcopy").onclick = () => { navigator.clipboard?.writeText(location.href).then(() => toast("링크를 복사했습니다"), () => toast(location.href)); };
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); save(); }
+  else if (e.key === "Escape" && S.openId && !$("#dlg").open) closePanel();
+});
+window.addEventListener("hashchange", openFromHash);
+window.addEventListener("beforeunload", e => { if (S.dirty) { e.preventDefault(); e.returnValue = ""; } });
+let rsT; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(() => S.view === "timeline" && render(), 150); });
+
+applyTheme();
+load();
+</script>
+</body>
+</html>
