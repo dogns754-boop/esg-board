@@ -819,8 +819,21 @@ function showConflict(remote) {
     ["내 버전 MD 내려받기", () => download(S.data, "board-mine.md")],
   ]);
 }
+// 이 컴퓨터에서 열었을 때(작업보드 열기.bat): 토큰 없이 저장소의 board.md를 바로 읽는다
+const IS_LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
+function textKey(t) { let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return "local:" + t.length + ":" + (h >>> 0).toString(16); }
+async function localFileSync() {
+  try {
+    const r = await fetch("board.md?t=" + Date.now(), { cache: "no-store" }); if (!r.ok) return;
+    const text = (await r.text()).replace(/\r\n/g, "\n"); const key = textKey(text);
+    if (S.data && S.base && S.base.sha === key) return;
+    if (S.data && S.unsynced.size) return; // 이 브라우저에서 고친 것이 있으면 덮지 않는다
+    const data = parseMd(text); normalize(data);
+    takeRemote({ sha: key, data, text }, S.data ? `저장소의 최신 보드 v${data.meta.version}을 읽었습니다` : null);
+  } catch {}
+}
 async function startupSync() {
-  if (!hasToken()) return;
+  if (!hasToken()) return IS_LOCAL ? localFileSync() : undefined;
   try {
     const remote = await ghGet();
     if (!remote) return;
