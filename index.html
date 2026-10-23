@@ -78,7 +78,7 @@ select option { background: var(--pop); color: var(--ink); }
 .brand small { display: flex; align-items: center; gap: 6px; font: 500 10.5px "JetBrains Mono", monospace; color: var(--ink3); white-space: nowrap; overflow: hidden; }
 .ver { position: relative; overflow: hidden; display: inline-flex; align-items: baseline; padding: 3px 8px; border-radius: 999px; background: var(--grad-fun); color: #0f1618;
   font: 900 10.5px/1 "JetBrains Mono", monospace; box-shadow: 0 0 12px rgba(68,215,182,.3); }
-.ver::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.7) 50%, transparent 65%); transform: translateX(-130%); animation: sdShine 3.6s ease-in-out infinite; }
+.ver::after { display: none; content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.7) 50%, transparent 65%); transform: translateX(-130%);  }
 @keyframes sdShine { 0%, 60% { transform: translateX(-130%); } 88%, 100% { transform: translateX(130%); } }
 .nv { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; padding: 9px 12px; border-radius: 10px; color: var(--ink);
   text-decoration: none; font-size: 14px; font-weight: 500; border: 1px solid transparent; background: none; text-align: left; cursor: pointer; }
@@ -109,8 +109,8 @@ select option { background: var(--pop); color: var(--ink); }
 .ntag.hot { background: linear-gradient(135deg, #ff8a3d, #ff3b5c); box-shadow: 0 0 10px rgba(255,72,88,.45), inset 0 0 0 1px rgba(255,255,255,.18); }
 .ntag.up { background: linear-gradient(135deg, #ffe38a, #f5b83d 55%, #d99a1e); color: #3d2600; box-shadow: 0 0 10px rgba(245,184,61,.45), inset 0 0 0 1px rgba(255,255,255,.35); }
 .ntag.new { background: linear-gradient(135deg, #7cf0c2, #34c98f); color: #053b27; box-shadow: 0 0 10px rgba(71,209,154,.4), inset 0 0 0 1px rgba(255,255,255,.25); }
-.ntag::after { content: ""; position: absolute; top: -2px; bottom: -2px; left: 0; width: 9px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.75), transparent);
-  transform: translateX(-14px) skewX(-18deg); animation: ntShine 3.4s ease-in-out infinite; }
+.ntag::after { display: none; content: ""; position: absolute; top: -2px; bottom: -2px; left: 0; width: 9px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.75), transparent);
+  transform: translateX(-14px) skewX(-18deg);  }
 @keyframes ntShine { 0%, 68% { transform: translateX(-14px) skewX(-18deg); } 100% { transform: translateX(34px) skewX(-18deg); } }
 .sb .ft { margin-top: auto; padding: 14px 8px 0; font-size: 11.5px; line-height: 1.6; color: var(--dim); }
 .sb .ft .sy { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.03); border: 1px solid var(--line); }
@@ -202,7 +202,7 @@ main { flex: 1; overflow: auto; position: relative; min-height: 0; scrollbar-wid
   box-shadow: 0 10px 34px rgba(233,99,135,.12), inset 0 1px 0 rgba(255,255,255,.06); }
 .hi::before { content: ""; position: absolute; inset: 0; padding: 1.5px; border-radius: inherit; z-index: -1;
   background: conic-gradient(from var(--hia), #e96387, #c1a8ea, #f6a6c1, #a080d0, #e96387);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: hiSpin 8s linear infinite; }
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;  }
 .hi::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1; background: radial-gradient(420px 120px at 12% 0%, rgba(233,99,135,.2), transparent 70%); }
 @keyframes hiSpin { to { --hia: 360deg; } }
 .hi p { margin: 0; }
@@ -215,7 +215,7 @@ main { flex: 1; overflow: auto; position: relative; min-height: 0; scrollbar-wid
 .hi-c:hover { background: rgba(233,99,135,.26); transform: translateY(-1px); }
 .hi-c small { font: 700 11px "JetBrains Mono", monospace; color: var(--ink2); }
 .hi-s { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; margin-top: 10px !important; padding-top: 12px; border-top: 1px dashed rgba(193,168,234,.28); font-size: 14px; font-weight: 500; color: #e6dbff; }
-.hi-s i { font-style: normal; color: var(--star); text-shadow: 0 0 8px rgba(255,211,107,.6); animation: hiTw 2.4s ease-in-out infinite; }
+.hi-s i { font-style: normal; color: var(--star); text-shadow: 0 0 8px rgba(255,211,107,.6);  }
 .hi-s b { font-weight: 800; color: var(--ink); }
 .hi-s .dd { font: 700 11.5px "JetBrains Mono", monospace; padding: 1px 7px; border-radius: 999px; color: #ffd36b; background: rgba(255,211,107,.12); border: 1px solid rgba(255,211,107,.35); }
 @keyframes hiTw { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
@@ -484,8 +484,8 @@ svg.arrows.focus path.dep.hl1 { opacity: 1; stroke: #e6dcf8; stroke-width: 2.2; 
 svg.arrows.focus path.dep.hl2 { opacity: .8; stroke: #c1a8ea; stroke-width: 1.7; stroke-dasharray: none; }
 svg.arrows.focus path.dep.hl3 { opacity: .55; stroke: #a58fd0; stroke-width: 1.3; stroke-dasharray: 4 4; }
 svg.arrows.focus path.dep.bad.hl1, svg.arrows.focus path.dep.bad.hl2 { stroke: #ffc4c4; }
-.flow, .gl-f.on { fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 14 900; animation: depFlow 2.4s linear infinite; pointer-events: none; }
-.flow.hl1, .gl-f.on.hl1 { opacity: .85; } .flow.hl2, .gl-f.on.hl2 { opacity: .55; } .flow.hl3, .gl-f.on.hl3 { opacity: .35; stroke-width: 1.6; }
+.dflow, .gl-f.on { fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 14 900; animation: depFlow 2.4s linear infinite; pointer-events: none; }
+.dflow.hl1, .gl-f.on.hl1 { opacity: .85; } .dflow.hl2, .gl-f.on.hl2 { opacity: .55; } .dflow.hl3, .gl-f.on.hl3 { opacity: .35; stroke-width: 1.6; }
 .gl-f { display: none; } .gl-f.on { display: inline; }
 @keyframes depFlow { from { stroke-dashoffset: 914; } to { stroke-dashoffset: 0; } }
 .tl.focus .bar-el:not(.lv0):not(.lv1):not(.lv2):not(.lv3) { opacity: .3; }
@@ -662,7 +662,7 @@ dialog .acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1
   dialog .f { grid-template-columns: minmax(0, 1fr); gap: 4px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .flow, .gl-f.on { animation: none; display: none; }
+  .dflow, .gl-f.on { animation: none; display: none; }
   svg.arrows path.dep, .bar-el { transition: none; }
   .sb, .mn, .toast, .gb, .sb .gl .chev, .sbtg svg.i { transition: none; }
   .hi::before, .hi-s i, .ntag::after, .ver::after { animation: none; }
@@ -797,7 +797,7 @@ dialog .acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1
 .ng.focus .ng-wires path.hl1 { opacity: 1; stroke-width: 2.8; }
 .ng.focus .ng-wires path.hl2 { opacity: .7; stroke-width: 2; }
 .ng.focus .ng-wires path.hl3 { opacity: .45; stroke-width: 1.6; stroke-dasharray: 6 5; }
-.ng-wires path.flow { stroke: #fff; }
+.ng-wires path.dflow { stroke: #fff; }
 .ng.focus .nd:not(.lv0):not(.lv1):not(.lv2):not(.lv3) { opacity: .35; }
 .nd.lv1::after, .nd.lv2::after, .nd.lv3::after { position: absolute; top: -9px; right: 10px; padding: 0 6px; border-radius: 999px; font: 700 10px/16px "Pretendard Variable", sans-serif; color: #18181a; }
 .nd.lv1::after { content: "1차"; background: #e6dcf8; } .nd.lv2::after { content: "2차"; background: #c1a8ea; } .nd.lv3::after { content: "3차+"; background: #8f7bb8; color: #fff; }
@@ -1948,12 +1948,12 @@ function renderTimeline(prevScroll) {
   const hl = id => {
     id = id || G.tlPin; const lv = id ? depLevels([[id, 0]], tlEdges) : null;
     svg.classList.toggle("focus", !!id); tl.classList.toggle("focus", !!id);
-    $$(".flow", svg).forEach(f => f.remove());
+    $$(".dflow", svg).forEach(f => f.remove());
     dps.forEach((q, i) => {
       const l = lv?.edge[i]; q.classList.remove("hl1", "hl2", "hl3");
       if (l === undefined) return;
       const c = "hl" + Math.min(3, l), f = q.cloneNode(); q.classList.add(c);
-      f.removeAttribute("marker-start"); f.removeAttribute("marker-end"); f.setAttribute("class", "flow " + c); svg.append(f);
+      f.removeAttribute("marker-start"); f.removeAttribute("marker-end"); f.setAttribute("class", "dflow " + c); svg.append(f);
     });
     $$(".bar-el, .tl-left[data-id]").forEach(b => { b.classList.remove("lv0", "lv1", "lv2", "lv3"); const c = lvCls(lv?.node[b.dataset.id]); if (c) b.classList.add(c); b.classList.toggle("pin", b.dataset.id === G.tlPin); });
   };
@@ -2044,7 +2044,7 @@ function laneView() {
       const oa = ((outI[a.id] = (outI[a.id] || 0) + 1) - 1 - (outN[a.id] - 1) / 2) * 7, ob = ((inI[b.id] = (inI[b.id] || 0) + 1) - 1 - (inN[b.id] - 1) / 2) * 7;
       const x1 = ea.left + ea.width / 2 + oa - R.left, y1 = ea.bottom - R.top, x2 = eb.left + eb.width / 2 + ob - R.left, y2 = eb.top - R.top, k = (y2 - y1) * .55;
       const dp = `M${x1.toFixed(1)},${y1.toFixed(1)} C${x1.toFixed(1)},${(y1 + k).toFixed(1)} ${x2.toFixed(1)},${(y2 - k).toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`, on = id && (a.id === id || b.id === id);
-      return `<path class="lw ${lv}${on ? " hl" : ""}" d="${dp}"><title>${esc(a.id)} → ${esc(b.id)} · ${n ? `필요 ${n} 중 완료 ${d}` : "이 단계에서는 아직 필요 없음"}</title></path>${on ? `<path class="flow hl1" d="${dp}"/>` : ""}`;
+      return `<path class="lw ${lv}${on ? " hl" : ""}" d="${dp}"><title>${esc(a.id)} → ${esc(b.id)} · ${n ? `필요 ${n} 중 완료 ${d}` : "이 단계에서는 아직 필요 없음"}</title></path>${on ? `<path class="dflow hl1" d="${dp}"/>` : ""}`;
     }).join("");
     wrap.classList.toggle("focus", !!id);
     $$(".lh", wrap).forEach(h => { const sid = h.dataset.sid; h.classList.toggle("on", !id || sid === id || pairs.some(([a, b]) => (a.id === id && b.id === sid) || (b.id === id && a.id === sid))); h.classList.toggle("pin", sid === pin); });
@@ -2138,7 +2138,7 @@ function nodeEditor(list) {
   const draw = () => {
     svg.innerHTML = edges.map((e, i) => {
       const l = LV?.edge[i], c = l === undefined ? "" : " hl" + Math.min(3, l), d = wire(e);
-      return `<path class="c-${colorOf("stage", byId(e[0]).stage)}${c}" data-a="${esc(e[0])}" data-b="${esc(e[1])}" d="${d}"/>` + (c ? `<path class="flow${c}" d="${d}"/>` : "");
+      return `<path class="c-${colorOf("stage", byId(e[0]).stage)}${c}" data-a="${esc(e[0])}" data-b="${esc(e[1])}" d="${d}"/>` + (c ? `<path class="dflow${c}" d="${d}"/>` : "");
     }).join("");
   };
   let pin = null;
